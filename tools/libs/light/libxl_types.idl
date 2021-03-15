@@ -777,6 +777,8 @@ libxl_device_nic = Struct("device_nic", [
     ])
 
 libxl_device_pci = Struct("device_pci", [
+    ("backend_domid", libxl_domid),
+    ("backend_domname", string),
     ("func", uint8),
     ("dev", uint8),
     ("bus", uint8),
