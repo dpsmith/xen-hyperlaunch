@@ -551,6 +551,9 @@ struct domain *domain_create(domid_t domid,
     {
         d->options = config->flags;
         d->vmtrace_size = config->vmtrace_size;
+
+        if (config->flags & XEN_DOMCTL_CDF_xs_domain)
+            d->xsm_roles = XSM_XENSTORE;
     }
 
     /* Sort out our idea of is_control_domain(). */

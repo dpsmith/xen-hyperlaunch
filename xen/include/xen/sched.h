@@ -1129,7 +1129,7 @@ static inline bool is_vcpu_online(const struct vcpu *v)
 
 static inline bool is_xenstore_domain(const struct domain *d)
 {
-    return d->options & XEN_DOMCTL_CDF_xs_domain;
+    return d->xsm_roles & XSM_XENSTORE;
 }
 
 static always_inline bool is_iommu_enabled(const struct domain *d)
