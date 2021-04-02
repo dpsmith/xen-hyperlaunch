@@ -457,6 +457,24 @@ struct domain
      */
     bool             creation_finished;
 
+    /* When SILO or Flask are not in use, a domain may have one or more roles
+     * that are desired for it to fulfill. To accomplish these role a set of
+     * privilege is required. A break down of the basic privilege is mapped
+     * to a bit field for assignment and verification.
+     */
+#define XSM_NONE      (1U<<0)  /* No role required to make the call */
+#define XSM_SELF      (1U<<1)  /* Allowed to make the call on self */
+#define XSM_TARGET    (1U<<2)  /* Allowed to make the call on a domain's target */
+#define XSM_PLAT_CTRL (1U<<3)  /* Platform Control: domain that control the overall platform */
+#define XSM_DOM_BUILD (1U<<4)  /* Domain Builder: domain that does domain construction and destruction */
+#define XSM_DOM_SUPER (1U<<5)  /* Domain Supervisor: domain that control the lifecycle, of all domains */
+#define XSM_DEV_EMUL  (1U<<6)  /* Device Emulator: domain that provides its target domain's device emulator */
+#define XSM_DEV_BACK  (1U<<7)  /* Device Backend: domain that provides a device backend */
+#define XSM_HW_CTRL   (1U<<8)  /* Hardware Control: domain with physical hardware access and its allocation for domain usage */
+#define XSM_HW_SUPER  (1U<<9)  /* Hardware Supervisor: domain that control allocated physical hardware */
+#define XSM_XENSTORE  (1U<<31) /* Xenstore: domain that can do privileged operations on xenstore */
+    uint32_t         xsm_roles;
+
     /* Which guest this guest has privileges on */
     struct domain   *target;
 
