@@ -556,6 +556,9 @@ struct domain *domain_create(domid_t domid,
     /* Sort out our idea of is_control_domain(). */
     d->is_privileged = is_priv;
 
+    if (is_priv)
+        d->xsm_roles = CLASSIC_DOM0_PRIVS;
+
     /* Sort out our idea of is_hardware_domain(). */
     if ( domid == 0 || domid == hardware_domid )
     {
