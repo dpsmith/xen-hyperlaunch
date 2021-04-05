@@ -65,37 +65,48 @@ void __xsm_action_mismatch_detected(void);
 #define XSM_INLINE always_inline
 #define XSM_DEFAULT_ARG xsm_default_t action,
 #define XSM_DEFAULT_VOID xsm_default_t action
-#define XSM_ASSERT_ACTION(def) LINKER_BUG_ON(def != action)
+#define XSM_ASSERT_ACTION(def) LINKER_BUG_ON((def) != action)
 
 #endif /* CONFIG_XSM */
 
 static always_inline int xsm_default_action(
     xsm_default_t action, struct domain *src, struct domain *target)
 {
-    switch ( action ) {
-    case XSM_HOOK:
+    /* TODO: these three if's could be squashed into one, decreasing
+     *       the readability/logical reason-ability but decrease the
+     *       number of spectre gadgets
+     */
+    if ( action & XSM_NONE )
         return 0;
-    case XSM_TARGET:
-        if ( evaluate_nospec(src == target) )
-        {
-            return 0;
-    case XSM_XS_PRIV:
-            if ( evaluate_nospec(is_xenstore_domain(src)) )
-                return 0;
-        }
-        /* fall through */
-    case XSM_DM_PRIV:
-        if ( target && evaluate_nospec(src->target == target) )
-            return 0;
-        /* fall through */
-    case XSM_PRIV:
-        if ( is_control_domain(src) )
-            return 0;
-        return -EPERM;
-    default:
-        LINKER_BUG_ON(1);
-        return -EPERM;
-    }
+
+    if ( (action & XSM_SELF) && ((!target) || (src == target)) )
+        return 0;
+
+    if ( (action & XSM_TARGET) && ((target) && (src->target == target)) )
+        return 0;
+
+    /* XSM_DEV_EMUL is the only domain role with a condition, i.e. the
+     * role only applies to a domain's target.
+     */
+    if ( (action & XSM_DEV_EMUL) && (src->xsm_roles & XSM_DEV_EMUL)
+        && (target) && (src->target == target) )
+        return 0;
+
+    /* Mask out SELF, TARGET, and DEV_EMUL as they have been handled */
+    action &= !(XSM_SELF & XSM_TARGET & XSM_DEV_EMUL);
+
+    /* Checks if the domain has one of the remaining roles set on it:
+     *      XSM_PLAT_CTRL
+     *      XSM_DOM_BUILD
+     *      XSM_DOM_SUPER
+     *      XSM_HW_CTRL
+     *      XSM_HW_SUPER
+     *      XSM_XENSTORE
+     */
+    if (src->xsm_roles & action)
+        return 0;
+
+    return -EPERM;
 }
 
 static XSM_INLINE void xsm_security_domaininfo(struct domain *d,

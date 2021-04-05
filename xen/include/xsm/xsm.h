@@ -30,18 +30,7 @@ typedef u32 xsm_magic_t;
 #define XSM_MAGIC 0x0
 #endif
 
-/* These annotations are used by callers and in dummy.h to document the
- * default actions of XSM hooks. They should be compiled out otherwise.
- */
-enum xsm_default {
-    XSM_HOOK,     /* Guests can normally access the hypercall */
-    XSM_DM_PRIV,  /* Device model can perform on its target domain */
-    XSM_TARGET,   /* Can perform on self or your target domain */
-    XSM_PRIV,     /* Privileged - normally restricted to dom0 */
-    XSM_XS_PRIV,  /* Xenstore domain - can do some privileged operations */
-    XSM_OTHER     /* Something more complex */
-};
-typedef enum xsm_default xsm_default_t;
+typedef uint32_t xsm_default_t;
 
 struct xsm_operations {
     void (*security_domaininfo) (struct domain *d,
