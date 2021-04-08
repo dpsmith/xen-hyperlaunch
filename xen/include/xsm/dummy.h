@@ -199,7 +199,7 @@ static XSM_INLINE int xsm_grant_unmapref(XSM_DEFAULT_ARG struct domain *d1, stru
 
 static XSM_INLINE int xsm_grant_setup(XSM_DEFAULT_ARG struct domain *d1, struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
@@ -217,13 +217,13 @@ static XSM_INLINE int xsm_grant_copy(XSM_DEFAULT_ARG struct domain *d1, struct d
 
 static XSM_INLINE int xsm_grant_query_size(XSM_DEFAULT_ARG struct domain *d1, struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
 static XSM_INLINE int xsm_memory_exchange(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 

@@ -2021,7 +2021,7 @@ gnttab_setup_table(
         goto out;
     }
 
-    if ( xsm_grant_setup(XSM_TARGET, curr->domain, d) )
+    if ( xsm_grant_setup(TARGET_PRIVS, curr->domain, d) )
     {
         op.status = GNTST_permission_denied;
         goto out;
@@ -2103,7 +2103,7 @@ gnttab_query_size(
         goto out;
     }
 
-    if ( xsm_grant_query_size(XSM_TARGET, current->domain, d) )
+    if ( xsm_grant_query_size(TARGET_PRIVS, current->domain, d) )
     {
         op.status = GNTST_permission_denied;
         goto out;
@@ -3231,7 +3231,7 @@ gnttab_get_status_frames(XEN_GUEST_HANDLE_PARAM(gnttab_get_status_frames_t) uop,
         op.status = GNTST_bad_domain;
         goto out1;
     }
-    rc = xsm_grant_setup(XSM_TARGET, current->domain, d);
+    rc = xsm_grant_setup(TARGET_PRIVS, current->domain, d);
     if ( rc )
     {
         op.status = GNTST_permission_denied;
@@ -3295,7 +3295,7 @@ gnttab_get_version(XEN_GUEST_HANDLE_PARAM(gnttab_get_version_t) uop)
     if ( d == NULL )
         return -ESRCH;
 
-    rc = xsm_grant_query_size(XSM_TARGET, current->domain, d);
+    rc = xsm_grant_query_size(TARGET_PRIVS, current->domain, d);
     if ( rc )
     {
         rcu_unlock_domain(d);

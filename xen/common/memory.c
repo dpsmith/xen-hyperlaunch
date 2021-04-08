@@ -603,7 +603,7 @@ static long memory_exchange(XEN_GUEST_HANDLE_PARAM(xen_memory_exchange_t) arg)
         goto fail_early;
     }
 
-    rc = xsm_memory_exchange(XSM_TARGET, d);
+    rc = xsm_memory_exchange(TARGET_PRIVS, d);
     if ( rc )
     {
         rcu_unlock_domain(d);

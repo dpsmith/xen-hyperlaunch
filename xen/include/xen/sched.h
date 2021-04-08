@@ -477,6 +477,8 @@ struct domain
 		XSM_DEV_EMUL | XSM_HW_CTRL | XSM_HW_SUPER | XSM_XENSTORE)
 /* Any access for which XSM_DEV_EMUL is the restriction, XSM_DOM_SUPER is an override */
 #define DEV_EMU_PRIVS (XSM_DOM_SUPER | XSM_DEV_EMUL)
+/* Anytime there is an XSM_TARGET check, XSM_SELF also applies, and XSM_DOM_SUPER is an override */
+#define TARGET_PRIVS (XSM_TARGET | XSM_SELF | XSM_DOM_SUPER)
     uint32_t         xsm_roles;
 
     /* Which guest this guest has privileges on */
