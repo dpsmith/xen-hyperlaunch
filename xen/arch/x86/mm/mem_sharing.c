@@ -1883,7 +1883,7 @@ int mem_sharing_memop(XEN_GUEST_HANDLE_PARAM(xen_mem_sharing_op_t) arg)
     if ( rc )
         return rc;
 
-    rc = xsm_mem_sharing(XSM_DM_PRIV, d);
+    rc = xsm_mem_sharing(DEV_EMU_PRIVS, d);
     if ( rc )
         goto out;
 
@@ -1928,7 +1928,7 @@ int mem_sharing_memop(XEN_GUEST_HANDLE_PARAM(xen_mem_sharing_op_t) arg)
         if ( rc )
             goto out;
 
-        rc = xsm_mem_sharing_op(XSM_DM_PRIV, d, cd, mso.op);
+        rc = xsm_mem_sharing_op(DEV_EMU_PRIVS, d, cd, mso.op);
         if ( rc )
         {
             rcu_unlock_domain(cd);
@@ -1994,7 +1994,7 @@ int mem_sharing_memop(XEN_GUEST_HANDLE_PARAM(xen_mem_sharing_op_t) arg)
         if ( rc )
             goto out;
 
-        rc = xsm_mem_sharing_op(XSM_DM_PRIV, d, cd, mso.op);
+        rc = xsm_mem_sharing_op(DEV_EMU_PRIVS, d, cd, mso.op);
         if ( rc )
         {
             rcu_unlock_domain(cd);
@@ -2056,7 +2056,7 @@ int mem_sharing_memop(XEN_GUEST_HANDLE_PARAM(xen_mem_sharing_op_t) arg)
          * We reuse XENMEM_sharing_op_share XSM check here as this is
          * essentially the same concept repeated over multiple pages.
          */
-        rc = xsm_mem_sharing_op(XSM_DM_PRIV, d, cd,
+        rc = xsm_mem_sharing_op(DEV_EMU_PRIVS, d, cd,
                                 XENMEM_sharing_op_share);
         if ( rc )
         {

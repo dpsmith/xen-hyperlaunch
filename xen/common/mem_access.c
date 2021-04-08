@@ -47,7 +47,7 @@ int mem_access_memop(unsigned long cmd,
     if ( !p2m_mem_access_sanity_check(d) )
         goto out;
 
-    rc = xsm_mem_access(XSM_DM_PRIV, d);
+    rc = xsm_mem_access(DEV_EMU_PRIVS, d);
     if ( rc )
         goto out;
 

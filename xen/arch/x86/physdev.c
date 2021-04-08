@@ -110,7 +110,7 @@ int physdev_map_pirq(domid_t domid, int type, int *index, int *pirq_p,
     if ( d == NULL )
         return -ESRCH;
 
-    ret = xsm_map_domain_pirq(XSM_DM_PRIV, d);
+    ret = xsm_map_domain_pirq(DEV_EMU_PRIVS, d);
     if ( ret )
         goto free_domain;
 
@@ -148,7 +148,7 @@ int physdev_unmap_pirq(domid_t domid, int pirq)
         return -ESRCH;
 
     if ( domid != DOMID_SELF || !is_hvm_domain(d) || !has_pirq(d) )
-        ret = xsm_unmap_domain_pirq(XSM_DM_PRIV, d);
+        ret = xsm_unmap_domain_pirq(DEV_EMU_PRIVS, d);
     if ( ret )
         goto free_domain;
 

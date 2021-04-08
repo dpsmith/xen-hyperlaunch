@@ -1944,7 +1944,7 @@ ret_t do_sched_op(int cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
         if ( d == NULL )
             break;
 
-        ret = xsm_schedop_shutdown(XSM_DM_PRIV, current->domain, d);
+        ret = xsm_schedop_shutdown(DEV_EMU_PRIVS, current->domain, d);
         if ( likely(!ret) )
             domain_shutdown(d, sched_remote_shutdown.reason);
 

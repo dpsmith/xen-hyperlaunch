@@ -154,7 +154,7 @@ static XSM_INLINE int xsm_domctl(XSM_DEFAULT_ARG struct domain *d, int cmd)
     case XEN_DOMCTL_memory_mapping:
     case XEN_DOMCTL_bind_pt_irq:
     case XEN_DOMCTL_unbind_pt_irq:
-        return xsm_default_action(XSM_DM_PRIV, current->domain, d);
+        return xsm_default_action(DEV_EMU_PRIVS, current->domain, d);
     case XEN_DOMCTL_getdomaininfo:
         return xsm_default_action(XSM_XS_PRIV, current->domain, d);
     default:
@@ -266,7 +266,7 @@ static XSM_INLINE int xsm_kexec(XSM_DEFAULT_VOID)
 
 static XSM_INLINE int xsm_schedop_shutdown(XSM_DEFAULT_ARG struct domain *d1, struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
@@ -472,7 +472,7 @@ static XSM_INLINE char *xsm_show_irq_sid(int irq)
 
 static XSM_INLINE int xsm_map_domain_pirq(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -485,7 +485,7 @@ static XSM_INLINE int xsm_map_domain_irq(XSM_DEFAULT_ARG struct domain *d,
 
 static XSM_INLINE int xsm_unmap_domain_pirq(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -558,9 +558,10 @@ static XSM_INLINE int xsm_hvm_param(XSM_DEFAULT_ARG struct domain *d, unsigned l
     return xsm_default_action(action, current->domain, d);
 }
 
+/* This check is no longer being called */
 static XSM_INLINE int xsm_hvm_control(XSM_DEFAULT_ARG struct domain *d, unsigned long op)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -579,11 +580,11 @@ static XSM_INLINE int xsm_hvm_altp2mhvm_op(XSM_DEFAULT_ARG struct domain *d, uin
     case XEN_ALTP2M_mixed:
         return xsm_default_action(XSM_TARGET, current->domain, d);
     case XEN_ALTP2M_external:
-        return xsm_default_action(XSM_DM_PRIV, current->domain, d);
+        return xsm_default_action(DEV_EMU_PRIVS, current->domain, d);
     case XEN_ALTP2M_limited:
         if ( HVMOP_altp2m_vcpu_enable_notify == op )
             return xsm_default_action(XSM_TARGET, current->domain, d);
-        return xsm_default_action(XSM_DM_PRIV, current->domain, d);
+        return xsm_default_action(DEV_EMU_PRIVS, current->domain, d);
     default:
         return -EPERM;
     }
@@ -598,7 +599,7 @@ static XSM_INLINE int xsm_vm_event_control(XSM_DEFAULT_ARG struct domain *d, int
 #ifdef CONFIG_MEM_ACCESS
 static XSM_INLINE int xsm_mem_access(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 #endif
@@ -606,7 +607,7 @@ static XSM_INLINE int xsm_mem_access(XSM_DEFAULT_ARG struct domain *d)
 #ifdef CONFIG_HAS_MEM_PAGING
 static XSM_INLINE int xsm_mem_paging(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 #endif
@@ -614,7 +615,7 @@ static XSM_INLINE int xsm_mem_paging(XSM_DEFAULT_ARG struct domain *d)
 #ifdef CONFIG_MEM_SHARING
 static XSM_INLINE int xsm_mem_sharing(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 #endif
@@ -640,7 +641,7 @@ static XSM_INLINE int xsm_shadow_control(XSM_DEFAULT_ARG struct domain *d, uint3
 
 static XSM_INLINE int xsm_mem_sharing_op(XSM_DEFAULT_ARG struct domain *d, struct domain *cd, int op)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, cd);
 }
 
@@ -724,7 +725,7 @@ static XSM_INLINE int xsm_pmu_op (XSM_DEFAULT_ARG struct domain *d, unsigned int
 
 static XSM_INLINE int xsm_dm_op(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -780,6 +781,6 @@ static XSM_INLINE int xsm_xen_version (XSM_DEFAULT_ARG uint32_t op)
 
 static XSM_INLINE int xsm_domain_resource_map(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_DM_PRIV);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
