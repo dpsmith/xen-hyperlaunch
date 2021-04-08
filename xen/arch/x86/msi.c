@@ -1310,7 +1310,7 @@ int pci_restore_msi_state(struct pci_dev *pdev)
     if ( !use_msi )
         return -EOPNOTSUPP;
 
-    ret = xsm_resource_setup_pci(XSM_PRIV,
+    ret = xsm_resource_setup_pci(XSM_HW_CTRL,
                                 (pdev->seg << 16) | (pdev->bus << 8) |
                                 pdev->devfn);
     if ( ret )

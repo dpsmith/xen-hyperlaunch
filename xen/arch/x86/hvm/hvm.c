@@ -4211,7 +4211,7 @@ static int hvm_set_param(struct domain *d, uint32_t index, uint64_t value)
         rc = pmtimer_change_ioport(d, value);
         break;
     case HVM_PARAM_ALTP2M:
-        rc = xsm_hvm_param_altp2mhvm(XSM_PRIV, d);
+        rc = xsm_hvm_param_altp2mhvm(XSM_DOM_SUPER, d);
         if ( rc )
             break;
         if ( (value > XEN_ALTP2M_limited) ||

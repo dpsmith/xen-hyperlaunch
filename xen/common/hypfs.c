@@ -679,7 +679,7 @@ long do_hypfs_op(unsigned int cmd,
     struct hypfs_entry *entry;
     static char path[XEN_HYPFS_MAX_PATHLEN];
 
-    if ( xsm_hypfs_op(XSM_PRIV) )
+    if ( xsm_hypfs_op(XSM_PLAT_CTRL) )
         return -EPERM;
 
     if ( cmd == XEN_HYPFS_OP_get_version )

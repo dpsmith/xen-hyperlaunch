@@ -1219,7 +1219,7 @@ static int do_kexec_op_internal(unsigned long op,
 {
     int ret = -EINVAL;
 
-    ret = xsm_kexec(XSM_PRIV);
+    ret = xsm_kexec(XSM_PLAT_CTRL);
     if ( ret )
         return ret;
 

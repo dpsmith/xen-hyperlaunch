@@ -158,13 +158,13 @@ static XSM_INLINE int xsm_domctl(XSM_DEFAULT_ARG struct domain *d, int cmd)
     case XEN_DOMCTL_getdomaininfo:
         return xsm_default_action(XENSTORE_PRIVS, current->domain, d);
     default:
-        return xsm_default_action(XSM_PRIV, current->domain, d);
+        return xsm_default_action(XSM_DOM_SUPER, current->domain, d);
     }
 }
 
 static XSM_INLINE int xsm_sysctl(XSM_DEFAULT_ARG int cmd)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_PLAT_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
@@ -260,7 +260,7 @@ static XSM_INLINE int xsm_profile(XSM_DEFAULT_ARG struct domain *d, int op)
 
 static XSM_INLINE int xsm_kexec(XSM_DEFAULT_VOID)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_PLAT_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
@@ -279,7 +279,7 @@ static XSM_INLINE int xsm_memory_pin_page(XSM_DEFAULT_ARG struct domain *d1, str
 
 static XSM_INLINE int xsm_claim_pages(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_DOM_SUPER);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -345,13 +345,13 @@ static XSM_INLINE int xsm_init_hardware_domain(XSM_DEFAULT_ARG struct domain *d)
 
 static XSM_INLINE int xsm_get_pod_target(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_DOM_SUPER);
     return xsm_default_action(action, current->domain, d);
 }
 
 static XSM_INLINE int xsm_set_pod_target(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_DOM_SUPER);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -413,31 +413,31 @@ static XSM_INLINE int xsm_resource_unplug_core(XSM_DEFAULT_VOID)
 
 static XSM_INLINE int xsm_resource_plug_pci(XSM_DEFAULT_ARG uint32_t machine_bdf)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_HW_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
 static XSM_INLINE int xsm_resource_unplug_pci(XSM_DEFAULT_ARG uint32_t machine_bdf)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_HW_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
 static XSM_INLINE int xsm_resource_setup_pci(XSM_DEFAULT_ARG uint32_t machine_bdf)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_HW_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
 static XSM_INLINE int xsm_resource_setup_gsi(XSM_DEFAULT_ARG int gsi)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_HW_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
 static XSM_INLINE int xsm_resource_setup_misc(XSM_DEFAULT_VOID)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_HW_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
@@ -449,7 +449,7 @@ static XSM_INLINE int xsm_page_offline(XSM_DEFAULT_ARG uint32_t cmd)
 
 static XSM_INLINE int xsm_hypfs_op(XSM_DEFAULT_VOID)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_PLAT_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
@@ -567,7 +567,7 @@ static XSM_INLINE int xsm_hvm_control(XSM_DEFAULT_ARG struct domain *d, unsigned
 
 static XSM_INLINE int xsm_hvm_param_altp2mhvm(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_DOM_SUPER);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -592,7 +592,7 @@ static XSM_INLINE int xsm_hvm_altp2mhvm_op(XSM_DEFAULT_ARG struct domain *d, uin
 
 static XSM_INLINE int xsm_vm_event_control(XSM_DEFAULT_ARG struct domain *d, int mode, int op)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_DOM_SUPER);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -622,14 +622,14 @@ static XSM_INLINE int xsm_mem_sharing(XSM_DEFAULT_ARG struct domain *d)
 
 static XSM_INLINE int xsm_platform_op(XSM_DEFAULT_ARG uint32_t op)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_PLAT_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
 #ifdef CONFIG_X86
 static XSM_INLINE int xsm_do_mca(XSM_DEFAULT_VOID)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_PLAT_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
@@ -647,13 +647,13 @@ static XSM_INLINE int xsm_mem_sharing_op(XSM_DEFAULT_ARG struct domain *d, struc
 
 static XSM_INLINE int xsm_apic(XSM_DEFAULT_ARG struct domain *d, int cmd)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_HW_CTRL);
     return xsm_default_action(action, d, NULL);
 }
 
 static XSM_INLINE int xsm_machine_memory_map(XSM_DEFAULT_VOID)
 {
-    XSM_ASSERT_ACTION(XSM_PRIV);
+    XSM_ASSERT_ACTION(XSM_PLAT_CTRL);
     return xsm_default_action(action, current->domain, NULL);
 }
 
@@ -717,7 +717,7 @@ static XSM_INLINE int xsm_pmu_op (XSM_DEFAULT_ARG struct domain *d, unsigned int
     case XENPMU_flush:
         return xsm_default_action(XSM_NONE, d, current->domain);
     default:
-        return xsm_default_action(XSM_PRIV, d, current->domain);
+        return xsm_default_action(XSM_DOM_SUPER, d, current->domain);
     }
 }
 
@@ -775,7 +775,7 @@ static XSM_INLINE int xsm_xen_version (XSM_DEFAULT_ARG uint32_t op)
         /* These MUST always be accessible to any guest by default. */
         return xsm_default_action(XSM_NONE, current->domain, NULL);
     default:
-        return xsm_default_action(XSM_PRIV, current->domain, NULL);
+        return xsm_default_action(XSM_PLAT_CTRL, current->domain, NULL);
     }
 }
 

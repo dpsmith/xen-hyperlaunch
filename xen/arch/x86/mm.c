@@ -4699,7 +4699,7 @@ long arch_memory_op(unsigned long cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
         unsigned int i;
         bool store;
 
-        rc = xsm_machine_memory_map(XSM_PRIV);
+        rc = xsm_machine_memory_map(XSM_PLAT_CTRL);
         if ( rc )
             return rc;
 
@@ -4789,9 +4789,9 @@ long arch_memory_op(unsigned long cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
             return -ESRCH;
 
         if ( cmd == XENMEM_set_pod_target )
-            rc = xsm_set_pod_target(XSM_PRIV, d);
+            rc = xsm_set_pod_target(XSM_DOM_SUPER, d);
         else
-            rc = xsm_get_pod_target(XSM_PRIV, d);
+            rc = xsm_get_pod_target(XSM_DOM_SUPER, d);
 
         if ( rc != 0 )
             goto pod_target_out_unlock;

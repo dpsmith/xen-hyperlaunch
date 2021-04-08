@@ -1376,7 +1376,7 @@ long do_mca(XEN_GUEST_HANDLE_PARAM(xen_mc_t) u_xen_mc)
     struct xen_mc_msrinject *mc_msrinject;
     struct xen_mc_mceinject *mc_mceinject;
 
-    ret = xsm_do_mca(XSM_PRIV);
+    ret = xsm_do_mca(XSM_PLAT_CTRL);
     if ( ret )
         return x86_mcerr("", ret);
 

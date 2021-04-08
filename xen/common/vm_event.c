@@ -584,7 +584,7 @@ int vm_event_domctl(struct domain *d, struct xen_domctl_vm_event_op *vec)
         return 0;
     }
 
-    rc = xsm_vm_event_control(XSM_PRIV, d, vec->mode, vec->op);
+    rc = xsm_vm_event_control(XSM_DOM_SUPER, d, vec->mode, vec->op);
     if ( rc )
         return rc;
 
