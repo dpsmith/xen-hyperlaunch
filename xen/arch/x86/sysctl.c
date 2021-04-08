@@ -190,8 +190,8 @@ long arch_do_sysctl(
         }
 
         if ( !ret )
-            ret = plug ? xsm_resource_plug_core(XSM_HOOK)
-                       : xsm_resource_unplug_core(XSM_HOOK);
+            ret = plug ? xsm_resource_plug_core(XSM_NONE)
+                       : xsm_resource_unplug_core(XSM_NONE);
 
         if ( !ret )
             ret = continue_hypercall_on_cpu(0, fn, hcpu);

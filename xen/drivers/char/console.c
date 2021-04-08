@@ -680,7 +680,7 @@ long do_console_io(unsigned int cmd, unsigned int count,
     long rc;
     unsigned int idx, len;
 
-    rc = xsm_console_io(XSM_OTHER, current->domain, cmd);
+    rc = xsm_console_io(XSM_NONE|XSM_DOM_SUPER, current->domain, cmd);
     if ( rc )
         return rc;
 

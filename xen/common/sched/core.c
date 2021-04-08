@@ -2046,7 +2046,7 @@ long sched_adjust(struct domain *d, struct xen_domctl_scheduler_op *op)
 {
     long ret;
 
-    ret = xsm_domctl_scheduler_op(XSM_HOOK, d, op->cmd);
+    ret = xsm_domctl_scheduler_op(XSM_NONE, d, op->cmd);
     if ( ret )
         return ret;
 
@@ -2081,7 +2081,7 @@ long sched_adjust_global(struct xen_sysctl_scheduler_op *op)
     struct cpupool *pool;
     int rc;
 
-    rc = xsm_sysctl_scheduler_op(XSM_HOOK, op->cmd);
+    rc = xsm_sysctl_scheduler_op(XSM_NONE, op->cmd);
     if ( rc )
         return rc;
 

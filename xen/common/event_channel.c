@@ -372,7 +372,7 @@ static long evtchn_bind_interdomain(evtchn_bind_interdomain_t *bind)
          (rchn->u.unbound.remote_domid != ld->domain_id) )
         ERROR_EXIT_DOM(-EINVAL, rd);
 
-    rc = xsm_evtchn_interdomain(XSM_HOOK, ld, lchn, rd, rchn);
+    rc = xsm_evtchn_interdomain(XSM_NONE, ld, lchn, rd, rchn);
     if ( rc )
         goto out;
 
@@ -760,7 +760,7 @@ int evtchn_send(struct domain *ld, unsigned int lport)
         goto out;
     }
 
-    ret = xsm_evtchn_send(XSM_HOOK, ld, lchn);
+    ret = xsm_evtchn_send(XSM_NONE, ld, lchn);
     if ( ret )
         goto out;
 

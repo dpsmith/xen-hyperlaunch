@@ -3497,7 +3497,7 @@ long do_mmuext_op(
                 break;
             }
 
-            rc = xsm_memory_pin_page(XSM_HOOK, currd, pg_owner, page);
+            rc = xsm_memory_pin_page(XSM_NONE, currd, pg_owner, page);
             if ( !rc && unlikely(test_and_set_bit(_PGT_pinned,
                                                   &page->u.inuse.type_info)) )
             {

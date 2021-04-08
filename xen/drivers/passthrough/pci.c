@@ -1484,7 +1484,7 @@ static int iommu_get_device_group(
              ((pdev->bus == bus) && (pdev->devfn == devfn)) )
             continue;
 
-        if ( xsm_get_device_group(XSM_HOOK, (seg << 16) | (pdev->bus << 8) | pdev->devfn) )
+        if ( xsm_get_device_group(XSM_NONE, (seg << 16) | (pdev->bus << 8) | pdev->devfn) )
             continue;
 
         sdev_id = ops->get_device_group_id(seg, pdev->bus, pdev->devfn);
@@ -1552,7 +1552,7 @@ int iommu_do_pci_domctl(
         u32 max_sdevs;
         XEN_GUEST_HANDLE_64(uint32) sdevs;
 
-        ret = xsm_get_device_group(XSM_HOOK, domctl->u.get_device_group.machine_sbdf);
+        ret = xsm_get_device_group(XSM_NONE, domctl->u.get_device_group.machine_sbdf);
         if ( ret )
             break;
 
@@ -1603,7 +1603,7 @@ int iommu_do_pci_domctl(
 
         machine_sbdf = domctl->u.assign_device.u.pci.machine_sbdf;
 
-        ret = xsm_assign_device(XSM_HOOK, d, machine_sbdf);
+        ret = xsm_assign_device(XSM_NONE, d, machine_sbdf);
         if ( ret )
             break;
 
@@ -1648,7 +1648,7 @@ int iommu_do_pci_domctl(
 
         machine_sbdf = domctl->u.assign_device.u.pci.machine_sbdf;
 
-        ret = xsm_deassign_device(XSM_HOOK, d, machine_sbdf);
+        ret = xsm_deassign_device(XSM_NONE, d, machine_sbdf);
         if ( ret )
             break;
 

@@ -311,7 +311,7 @@ static int late_hwdom_init(struct domain *d)
     if ( d != hardware_domain || d->domain_id == 0 )
         return 0;
 
-    rv = xsm_init_hardware_domain(XSM_HOOK, d);
+    rv = xsm_init_hardware_domain(XSM_NONE, d);
     if ( rv )
         return rv;
 
@@ -655,7 +655,7 @@ struct domain *domain_create(domid_t domid,
         if ( !d->iomem_caps || !d->irq_caps )
             goto fail;
 
-        if ( (err = xsm_domain_create(XSM_HOOK, d, config->ssidref)) != 0 )
+        if ( (err = xsm_domain_create(XSM_NONE, d, config->ssidref)) != 0 )
             goto fail;
 
         d->controller_pause_count = 1;

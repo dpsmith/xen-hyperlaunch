@@ -1063,7 +1063,7 @@ map_grant_ref(
         return;
     }
 
-    rc = xsm_grant_mapref(XSM_HOOK, ld, rd, op->flags);
+    rc = xsm_grant_mapref(XSM_NONE, ld, rd, op->flags);
     if ( rc )
     {
         rcu_unlock_domain(rd);
@@ -1403,7 +1403,7 @@ unmap_common(
         return;
     }
 
-    rc = xsm_grant_unmapref(XSM_HOOK, ld, rd);
+    rc = xsm_grant_unmapref(XSM_NONE, ld, rd);
     if ( rc )
     {
         rcu_unlock_domain(rd);
@@ -2274,7 +2274,7 @@ gnttab_transfer(
             goto put_gfn_and_copyback;
         }
 
-        if ( xsm_grant_transfer(XSM_HOOK, d, e) )
+        if ( xsm_grant_transfer(XSM_NONE, d, e) )
         {
             gop.status = GNTST_permission_denied;
         unlock_and_copyback:
@@ -2812,7 +2812,7 @@ static int gnttab_copy_lock_domains(const struct gnttab_copy *op,
     if ( rc < 0 )
         goto error;
 
-    rc = xsm_grant_copy(XSM_HOOK, src->domain, dest->domain);
+    rc = xsm_grant_copy(XSM_NONE, src->domain, dest->domain);
     if ( rc < 0 )
     {
         rc = GNTST_permission_denied;

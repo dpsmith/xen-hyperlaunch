@@ -234,7 +234,7 @@ long arch_do_domctl(
         if ( (fp + np) <= fp || (fp + np) > MAX_IOPORTS )
             ret = -EINVAL;
         else if ( !ioports_access_permitted(currd, fp, fp + np - 1) ||
-                  xsm_ioport_permission(XSM_HOOK, d, fp, fp + np - 1, allow) )
+                  xsm_ioport_permission(XSM_NONE, d, fp, fp + np - 1, allow) )
             ret = -EPERM;
         else if ( allow )
             ret = ioports_permit_access(d, fp, fp + np - 1);
@@ -534,7 +534,7 @@ long arch_do_domctl(
         if ( !is_hvm_domain(d) )
             break;
 
-        ret = xsm_bind_pt_irq(XSM_HOOK, d, bind);
+        ret = xsm_bind_pt_irq(XSM_NONE, d, bind);
         if ( ret )
             break;
 
@@ -569,7 +569,7 @@ long arch_do_domctl(
         if ( irq <= 0 || !irq_access_permitted(currd, irq) )
             break;
 
-        ret = xsm_unbind_pt_irq(XSM_HOOK, d, bind);
+        ret = xsm_unbind_pt_irq(XSM_NONE, d, bind);
         if ( ret )
             break;
 
@@ -616,7 +616,7 @@ long arch_do_domctl(
         if ( !ioports_access_permitted(currd, fmp, fmp + np - 1) )
             break;
 
-        ret = xsm_ioport_mapping(XSM_HOOK, d, fmp, fmp + np - 1, add);
+        ret = xsm_ioport_mapping(XSM_NONE, d, fmp, fmp + np - 1, add);
         if ( ret )
             break;
 
