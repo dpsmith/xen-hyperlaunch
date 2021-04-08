@@ -156,7 +156,7 @@ static XSM_INLINE int xsm_domctl(XSM_DEFAULT_ARG struct domain *d, int cmd)
     case XEN_DOMCTL_unbind_pt_irq:
         return xsm_default_action(DEV_EMU_PRIVS, current->domain, d);
     case XEN_DOMCTL_getdomaininfo:
-        return xsm_default_action(XSM_XS_PRIV, current->domain, d);
+        return xsm_default_action(XENSTORE_PRIVS, current->domain, d);
     default:
         return xsm_default_action(XSM_PRIV, current->domain, d);
     }

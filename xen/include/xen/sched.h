@@ -479,6 +479,8 @@ struct domain
 #define DEV_EMU_PRIVS (XSM_DOM_SUPER | XSM_DEV_EMUL)
 /* Anytime there is an XSM_TARGET check, XSM_SELF also applies, and XSM_DOM_SUPER is an override */
 #define TARGET_PRIVS (XSM_TARGET | XSM_SELF | XSM_DOM_SUPER)
+/* Anytime there is an XSM_XENSTORE check, XSM_DOM_SUPER is an override */
+#define XENSTORE_PRIVS (XSM_XENSTORE | XSM_DOM_SUPER)
     uint32_t         xsm_roles;
 
     /* Which guest this guest has privileges on */
