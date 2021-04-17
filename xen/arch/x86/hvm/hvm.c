@@ -4550,7 +4550,7 @@ static int do_altp2m_op(
         goto out;
     }
 
-    if ( (rc = xsm_hvm_altp2mhvm_op(XSM_OTHER, d, mode, a.cmd)) )
+    if ( (rc = xsm_hvm_altp2mhvm_op(TARGET_PRIVS | DEV_EMU_PRIVS, d, mode, a.cmd)) )
         goto out;
 
     switch ( a.cmd )

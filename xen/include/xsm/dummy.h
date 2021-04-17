@@ -147,7 +147,7 @@ static XSM_INLINE int xsm_set_target(XSM_DEFAULT_ARG struct domain *d, struct do
 
 static XSM_INLINE int xsm_domctl(XSM_DEFAULT_ARG struct domain *d, int cmd)
 {
-    XSM_ASSERT_ACTION(XSM_OTHER);
+    XSM_ASSERT_ACTION(DEV_EMU_PRIVS | XENSTORE_PRIVS | XSM_DOM_SUPER);
     switch ( cmd )
     {
     case XEN_DOMCTL_ioport_mapping:
@@ -573,7 +573,7 @@ static XSM_INLINE int xsm_hvm_param_altp2mhvm(XSM_DEFAULT_ARG struct domain *d)
 
 static XSM_INLINE int xsm_hvm_altp2mhvm_op(XSM_DEFAULT_ARG struct domain *d, uint64_t mode, uint32_t op)
 {
-    XSM_ASSERT_ACTION(XSM_OTHER);
+    XSM_ASSERT_ACTION(TARGET_PRIVS | DEV_EMU_PRIVS);
 
     switch ( mode )
     {
@@ -708,7 +708,7 @@ static XSM_INLINE int xsm_ioport_mapping(XSM_DEFAULT_ARG struct domain *d, uint3
 
 static XSM_INLINE int xsm_pmu_op (XSM_DEFAULT_ARG struct domain *d, unsigned int op)
 {
-    XSM_ASSERT_ACTION(XSM_OTHER);
+    XSM_ASSERT_ACTION(XSM_NONE | XSM_DOM_SUPER);
     switch ( op )
     {
     case XENPMU_init:
@@ -757,7 +757,7 @@ static XSM_INLINE int xsm_argo_send(const struct domain *d,
 #include <public/version.h>
 static XSM_INLINE int xsm_xen_version (XSM_DEFAULT_ARG uint32_t op)
 {
-    XSM_ASSERT_ACTION(XSM_OTHER);
+    XSM_ASSERT_ACTION(XSM_NONE | XSM_PLAT_CTRL);
     switch ( op )
     {
     case XENVER_version:

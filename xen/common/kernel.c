@@ -459,7 +459,7 @@ __initcall(param_init);
 
 DO(xen_version)(int cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
 {
-    bool_t deny = !!xsm_xen_version(XSM_OTHER, cmd);
+    bool_t deny = !!xsm_xen_version(XSM_NONE | XSM_PLAT_CTRL, cmd);
 
     switch ( cmd )
     {

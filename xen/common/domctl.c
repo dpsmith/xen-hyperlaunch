@@ -314,7 +314,7 @@ long do_domctl(XEN_GUEST_HANDLE_PARAM(xen_domctl_t) u_domctl)
             return -ESRCH;
     }
 
-    ret = xsm_domctl(XSM_OTHER, d, op->cmd);
+    ret = xsm_domctl(DEV_EMU_PRIVS | XENSTORE_PRIVS | XSM_DOM_SUPER, d, op->cmd);
     if ( ret )
         goto domctl_out_unlock_domonly;
 

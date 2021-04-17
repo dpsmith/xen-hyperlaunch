@@ -706,7 +706,7 @@ long do_xenpmu_op(unsigned int op, XEN_GUEST_HANDLE_PARAM(xen_pmu_params_t) arg)
     if ( !opt_vpmu_enabled || has_vlapic(current->domain) )
         return -EOPNOTSUPP;
 
-    ret = xsm_pmu_op(XSM_OTHER, current->domain, op);
+    ret = xsm_pmu_op(XSM_NONE | XSM_DOM_SUPER, current->domain, op);
     if ( ret )
         return ret;
 
