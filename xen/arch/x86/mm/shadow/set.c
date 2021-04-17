@@ -106,7 +106,7 @@ shadow_get_page_from_l1e(shadow_l1e_t sl1e, struct domain *d, p2m_type_t type)
          (owner = page_get_owner(mfn_to_page(mfn))) &&
          (d != owner) )
     {
-        res = xsm_priv_mapping(XSM_TARGET, d, owner);
+        res = xsm_priv_mapping(TARGET_PRIVS, d, owner);
         if ( !res )
         {
             res = get_page_from_l1e(sl1e, d, owner);

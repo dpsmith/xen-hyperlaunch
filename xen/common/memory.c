@@ -1062,7 +1062,7 @@ static long xatp_permission_check(struct domain *d, unsigned int space)
          (!is_hardware_domain(d) || (d != current->domain)) )
         return -EACCES;
 
-    return xsm_add_to_physmap(XSM_TARGET, current->domain, d);
+    return xsm_add_to_physmap(TARGET_PRIVS, current->domain, d);
 }
 
 unsigned int ioreq_server_max_frames(const struct domain *d)
@@ -1378,7 +1378,7 @@ long do_memory_op(unsigned long cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
              && (reservation.mem_flags & XENMEMF_populate_on_demand) )
             args.memflags |= MEMF_populate_on_demand;
 
-        if ( xsm_memory_adjust_reservation(XSM_TARGET, curr_d, d) )
+        if ( xsm_memory_adjust_reservation(TARGET_PRIVS, curr_d, d) )
         {
             rcu_unlock_domain(d);
             return start_extent;
@@ -1452,7 +1452,7 @@ long do_memory_op(unsigned long cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
         if ( d == NULL )
             return -ESRCH;
 
-        rc = xsm_memory_stat_reservation(XSM_TARGET, curr_d, d);
+        rc = xsm_memory_stat_reservation(TARGET_PRIVS, curr_d, d);
         if ( rc )
         {
             rcu_unlock_domain(d);
@@ -1574,7 +1574,7 @@ long do_memory_op(unsigned long cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
             return -ESRCH;
 
         rc = paging_mode_translate(d)
-             ? xsm_remove_from_physmap(XSM_TARGET, curr_d, d)
+             ? xsm_remove_from_physmap(TARGET_PRIVS, curr_d, d)
              : -EACCES;
         if ( rc )
         {
@@ -1652,7 +1652,7 @@ long do_memory_op(unsigned long cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
         if ( (d = rcu_lock_domain_by_any_id(topology.domid)) == NULL )
             return -ESRCH;
 
-        rc = xsm_get_vnumainfo(XSM_TARGET, d);
+        rc = xsm_get_vnumainfo(TARGET_PRIVS, d);
         if ( rc )
         {
             rcu_unlock_domain(d);

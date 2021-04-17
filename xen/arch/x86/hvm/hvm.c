@@ -4064,7 +4064,7 @@ static int hvm_allow_set_param(struct domain *d,
     uint64_t value;
     int rc;
 
-    rc = xsm_hvm_param(XSM_TARGET, d, HVMOP_set_param);
+    rc = xsm_hvm_param(TARGET_PRIVS, d, HVMOP_set_param);
     if ( rc )
         return rc;
 
@@ -4340,7 +4340,7 @@ static int hvm_allow_get_param(struct domain *d,
 {
     int rc;
 
-    rc = xsm_hvm_param(XSM_TARGET, d, HVMOP_get_param);
+    rc = xsm_hvm_param(TARGET_PRIVS, d, HVMOP_get_param);
     if ( rc )
         return rc;
 
@@ -4931,7 +4931,7 @@ static int hvmop_get_mem_type(
     if ( d == NULL )
         return -ESRCH;
 
-    rc = xsm_hvm_param(XSM_TARGET, d, HVMOP_get_mem_type);
+    rc = xsm_hvm_param(TARGET_PRIVS, d, HVMOP_get_mem_type);
     if ( rc )
         goto out;
 
@@ -5024,7 +5024,7 @@ long do_hvm_op(unsigned long op, XEN_GUEST_HANDLE_PARAM(void) arg)
         if ( unlikely(d != current->domain) )
             rc = -EOPNOTSUPP;
         else if ( is_hvm_domain(d) && paging_mode_shadow(d) )
-            rc = xsm_hvm_param(XSM_TARGET, d, op);
+            rc = xsm_hvm_param(TARGET_PRIVS, d, op);
         if ( !rc )
             pagetable_dying(a.gpa);
 

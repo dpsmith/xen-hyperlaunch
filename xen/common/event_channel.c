@@ -296,7 +296,7 @@ static long evtchn_alloc_unbound(evtchn_alloc_unbound_t *alloc)
         ERROR_EXIT_DOM(port, d);
     chn = evtchn_from_port(d, port);
 
-    rc = xsm_evtchn_unbound(XSM_TARGET, d, chn, alloc->remote_dom);
+    rc = xsm_evtchn_unbound(TARGET_PRIVS, d, chn, alloc->remote_dom);
     if ( rc )
         goto out;
 
@@ -985,7 +985,7 @@ int evtchn_status(evtchn_status_t *status)
         goto out;
     }
 
-    rc = xsm_evtchn_status(XSM_TARGET, d, chn);
+    rc = xsm_evtchn_status(TARGET_PRIVS, d, chn);
     if ( rc )
         goto out;
 
@@ -1310,7 +1310,7 @@ long do_event_channel_op(int cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
         if ( d == NULL )
             return -ESRCH;
 
-        rc = xsm_evtchn_reset(XSM_TARGET, current->domain, d);
+        rc = xsm_evtchn_reset(TARGET_PRIVS, current->domain, d);
         if ( !rc )
             rc = evtchn_reset(d, cmd == EVTCHNOP_reset_cont);
 
@@ -1371,7 +1371,7 @@ int alloc_unbound_xen_event_channel(
         goto out;
     chn = evtchn_from_port(ld, port);
 
-    rc = xsm_evtchn_unbound(XSM_TARGET, ld, chn, remote_domid);
+    rc = xsm_evtchn_unbound(TARGET_PRIVS, ld, chn, remote_domid);
     if ( rc )
         goto out;
 

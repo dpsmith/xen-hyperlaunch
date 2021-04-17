@@ -977,7 +977,7 @@ get_page_from_l1e(
          * minor hack can go away.
          */
         if ( (real_pg_owner == NULL) || (pg_owner == l1e_owner) ||
-             xsm_priv_mapping(XSM_TARGET, pg_owner, real_pg_owner) )
+             xsm_priv_mapping(TARGET_PRIVS, pg_owner, real_pg_owner) )
         {
             gdprintk(XENLOG_WARNING,
                      "pg_owner d%d l1e_owner d%d, but real_pg_owner d%d\n",
@@ -3407,7 +3407,7 @@ long do_mmuext_op(
         return -EINVAL;
     }
 
-    rc = xsm_mmuext_op(XSM_TARGET, currd, pg_owner);
+    rc = xsm_mmuext_op(TARGET_PRIVS, currd, pg_owner);
     if ( rc )
     {
         put_pg_owner(pg_owner);
@@ -4005,7 +4005,7 @@ long do_mmu_update(
             }
             if ( xsm_needed != xsm_checked )
             {
-                rc = xsm_mmu_update(XSM_TARGET, d, pt_owner, pg_owner, xsm_needed);
+                rc = xsm_mmu_update(TARGET_PRIVS, d, pt_owner, pg_owner, xsm_needed);
                 if ( rc )
                     break;
                 xsm_checked = xsm_needed;
@@ -4148,7 +4148,7 @@ long do_mmu_update(
             xsm_needed |= XSM_MMU_MACHPHYS_UPDATE;
             if ( xsm_needed != xsm_checked )
             {
-                rc = xsm_mmu_update(XSM_TARGET, d, NULL, pg_owner, xsm_needed);
+                rc = xsm_mmu_update(TARGET_PRIVS, d, NULL, pg_owner, xsm_needed);
                 if ( rc )
                     break;
                 xsm_checked = xsm_needed;
@@ -4393,7 +4393,7 @@ static int __do_update_va_mapping(
 
     perfc_incr(calls_to_update_va);
 
-    rc = xsm_update_va_mapping(XSM_TARGET, d, pg_owner, val);
+    rc = xsm_update_va_mapping(TARGET_PRIVS, d, pg_owner, val);
     if ( rc )
         return rc;
 
@@ -4632,7 +4632,7 @@ long arch_memory_op(unsigned long cmd, XEN_GUEST_HANDLE_PARAM(void) arg)
         if ( d == NULL )
             return -ESRCH;
 
-        rc = xsm_domain_memory_map(XSM_TARGET, d);
+        rc = xsm_domain_memory_map(TARGET_PRIVS, d);
         if ( rc )
         {
             rcu_unlock_domain(d);

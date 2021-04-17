@@ -230,13 +230,13 @@ static XSM_INLINE int xsm_memory_exchange(XSM_DEFAULT_ARG struct domain *d)
 static XSM_INLINE int xsm_memory_adjust_reservation(XSM_DEFAULT_ARG struct domain *d1,
                                                             struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
 static XSM_INLINE int xsm_memory_stat_reservation(XSM_DEFAULT_ARG struct domain *d1, struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
@@ -286,7 +286,7 @@ static XSM_INLINE int xsm_claim_pages(XSM_DEFAULT_ARG struct domain *d)
 static XSM_INLINE int xsm_evtchn_unbound(XSM_DEFAULT_ARG struct domain *d, struct evtchn *chn,
                                          domid_t id2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -310,13 +310,13 @@ static XSM_INLINE int xsm_evtchn_send(XSM_DEFAULT_ARG struct domain *d, struct e
 
 static XSM_INLINE int xsm_evtchn_status(XSM_DEFAULT_ARG struct domain *d, struct evtchn *chn)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
 static XSM_INLINE int xsm_evtchn_reset(XSM_DEFAULT_ARG struct domain *d1, struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
@@ -357,7 +357,7 @@ static XSM_INLINE int xsm_set_pod_target(XSM_DEFAULT_ARG struct domain *d)
 
 static XSM_INLINE int xsm_get_vnumainfo(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -536,25 +536,25 @@ static XSM_INLINE int xsm_pci_config_permission(XSM_DEFAULT_ARG struct domain *d
 
 static XSM_INLINE int xsm_add_to_physmap(XSM_DEFAULT_ARG struct domain *d1, struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
 static XSM_INLINE int xsm_remove_from_physmap(XSM_DEFAULT_ARG struct domain *d1, struct domain *d2)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d1, d2);
 }
 
 static XSM_INLINE int xsm_map_gmfn_foreign(XSM_DEFAULT_ARG struct domain *d, struct domain *t)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d, t);
 }
 
 static XSM_INLINE int xsm_hvm_param(XSM_DEFAULT_ARG struct domain *d, unsigned long op)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -578,12 +578,12 @@ static XSM_INLINE int xsm_hvm_altp2mhvm_op(XSM_DEFAULT_ARG struct domain *d, uin
     switch ( mode )
     {
     case XEN_ALTP2M_mixed:
-        return xsm_default_action(XSM_TARGET, current->domain, d);
+        return xsm_default_action(TARGET_PRIVS, current->domain, d);
     case XEN_ALTP2M_external:
         return xsm_default_action(DEV_EMU_PRIVS, current->domain, d);
     case XEN_ALTP2M_limited:
         if ( HVMOP_altp2m_vcpu_enable_notify == op )
-            return xsm_default_action(XSM_TARGET, current->domain, d);
+            return xsm_default_action(TARGET_PRIVS, current->domain, d);
         return xsm_default_action(DEV_EMU_PRIVS, current->domain, d);
     default:
         return -EPERM;
@@ -659,7 +659,7 @@ static XSM_INLINE int xsm_machine_memory_map(XSM_DEFAULT_VOID)
 
 static XSM_INLINE int xsm_domain_memory_map(XSM_DEFAULT_ARG struct domain *d)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, current->domain, d);
 }
 
@@ -667,7 +667,7 @@ static XSM_INLINE int xsm_mmu_update(XSM_DEFAULT_ARG struct domain *d, struct do
                                      struct domain *f, uint32_t flags)
 {
     int rc = 0;
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     if ( f != dom_io )
         rc = xsm_default_action(action, d, f);
     if ( evaluate_nospec(t) && !rc )
@@ -677,20 +677,20 @@ static XSM_INLINE int xsm_mmu_update(XSM_DEFAULT_ARG struct domain *d, struct do
 
 static XSM_INLINE int xsm_mmuext_op(XSM_DEFAULT_ARG struct domain *d, struct domain *f)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d, f);
 }
 
 static XSM_INLINE int xsm_update_va_mapping(XSM_DEFAULT_ARG struct domain *d, struct domain *f, 
                                                             l1_pgentry_t pte)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d, f);
 }
 
 static XSM_INLINE int xsm_priv_mapping(XSM_DEFAULT_ARG struct domain *d, struct domain *t)
 {
-    XSM_ASSERT_ACTION(XSM_TARGET);
+    XSM_ASSERT_ACTION(TARGET_PRIVS);
     return xsm_default_action(action, d, t);
 }
 
