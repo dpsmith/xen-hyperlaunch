@@ -594,7 +594,8 @@ static void do_nmi_stats(unsigned char key)
     for_each_online_cpu ( cpu )
         printk("%3u\t%3u\n", cpu, per_cpu(nmi_count, cpu));
 
-    if ( !hardware_domain || !(v = domain_vcpu(hardware_domain, 0)) )
+    if ( !is_hardware_domain_started() ||
+         !(v = domain_vcpu(get_hardware_domain(), 0)) )
         return;
 
     pend = v->arch.nmi_pending;

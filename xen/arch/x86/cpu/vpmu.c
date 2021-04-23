@@ -169,13 +169,14 @@ int vpmu_do_msr(unsigned int msr, uint64_t *msr_content,
 static inline struct vcpu *choose_hwdom_vcpu(void)
 {
     unsigned idx;
+    struct domain *hwdom = get_hardware_domain();
 
-    if ( hardware_domain->max_vcpus == 0 )
+    if ( hwdom->max_vcpus == 0 )
         return NULL;
 
-    idx = smp_processor_id() % hardware_domain->max_vcpus;
+    idx = smp_processor_id() % hwdom->max_vcpus;
 
-    return hardware_domain->vcpu[idx];
+    return hwdom->vcpu[idx];
 }
 
 void vpmu_do_interrupt(struct cpu_user_regs *regs)

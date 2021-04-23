@@ -566,7 +566,8 @@ static void __init ns16550_endboot(struct serial_port *port)
 
     if ( uart->remapped_io_base )
         return;
-    rv = ioports_deny_access(hardware_domain, uart->io_base, uart->io_base + 7);
+    rv = ioports_deny_access(get_hardware_domain(),
+            uart->io_base, uart->io_base + 7);
     if ( rv != 0 )
         BUG();
 #endif

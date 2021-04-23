@@ -776,7 +776,7 @@ int pci_add_device(u16 seg, u8 bus, u8 devfn,
     ret = 0;
     if ( !pdev->domain )
     {
-        pdev->domain = hardware_domain;
+        pdev->domain = get_hardware_domain();
         ret = iommu_add_device(pdev);
         if ( ret )
         {
@@ -784,7 +784,7 @@ int pci_add_device(u16 seg, u8 bus, u8 devfn,
             goto out;
         }
 
-        list_add(&pdev->domain_list, &hardware_domain->pdev_list);
+        list_add(&pdev->domain_list, &pdev->domain->pdev_list);
     }
     else
         iommu_enable_device(pdev);
@@ -860,7 +860,7 @@ static int deassign_device(struct domain *d, uint16_t seg, uint8_t bus,
     /* De-assignment from dom_io should de-quarantine the device */
     target = ((pdev->quarantine || iommu_quarantine) &&
               pdev->domain != dom_io) ?
-        dom_io : hardware_domain;
+        dom_io : get_hardware_domain();
 
     while ( pdev->phantom_stride )
     {
@@ -879,7 +879,7 @@ static int deassign_device(struct domain *d, uint16_t seg, uint8_t bus,
     if ( ret )
         goto out;
 
-    if ( pdev->domain == hardware_domain  )
+    if ( is_hardware_domain(pdev->domain) )
         pdev->quarantine = false;
 
     pdev->fault.count = 0;
@@ -1403,7 +1403,7 @@ static int device_assigned(u16 seg, u8 bus, u8 devfn)
      * domain or dom_io then it must be assigned to a guest, or be
      * hidden (owned by dom_xen).
      */
-    else if ( pdev->domain != hardware_domain &&
+    else if ( !is_hardware_domain(pdev->domain) &&
               pdev->domain != dom_io )
         rc = -EBUSY;
 
@@ -1426,7 +1426,7 @@ static int assign_device(struct domain *d, u16 seg, u8 bus, u8 devfn, u32 flag)
     /* device_assigned() should already have cleared the device for assignment */
     ASSERT(pcidevs_locked());
     pdev = pci_get_pdev(seg, bus, devfn);
-    ASSERT(pdev && (pdev->domain == hardware_domain ||
+    ASSERT(pdev && (is_hardware_domain(pdev->domain) ||
                     pdev->domain == dom_io));
 
     if ( pdev->msix )

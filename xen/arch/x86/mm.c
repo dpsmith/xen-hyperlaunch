@@ -4917,7 +4917,7 @@ mfn_t alloc_xen_pagetable_new(void)
     {
         void *ptr = alloc_xenheap_page();
 
-        BUG_ON(!hardware_domain && !ptr);
+        BUG_ON(!ptr);
         return ptr ? virt_to_mfn(ptr) : INVALID_MFN;
     }
 

@@ -45,6 +45,7 @@
 
 #ifdef CONFIG_X86
 #include <asm/guest.h>
+#include <asm/pv/shim.h>
 #endif
 
 /* Linux config option: propageted to domain0 */
@@ -302,23 +303,50 @@ struct vcpu *vcpu_create(struct domain *d, unsigned int vcpu_id)
     return NULL;
 }
 
-static int late_hwdom_init(struct domain *d)
+/* pivot_hw_ctl:
+ *  This is a one-way pivot from existing to new hardware domain. Upon success
+ *  the domain *next_hwdom will be in control of the hardware and domain
+ *  *curr_hwdom will no longer have access.
+ */
+static int pivot_hw_ctl(struct domain *next_hwdom)
 {
 #ifdef CONFIG_LATE_HWDOM
-    struct domain *dom0;
+    bool already_found = false;
+    struct domain **pd = &domain_list, *curr_hwdom = NULL;
+    domid_t dom0_id = 0;
     int rv;
 
-    if ( d != hardware_domain || d->domain_id == 0 )
+#ifdef CONFIG_PV_SHIM
+    /* On PV shim dom0 != 0 */
+    dom0_id = get_initial_domain_id();
+#endif
+
+    if ( !(next_hwdom->xsm_roles & XSM_HW_CTRL) &&
+         next_hwdom->domain_id == dom0_id )
         return 0;
 
-    rv = xsm_init_hardware_domain(XSM_NONE, d);
+    rv = xsm_init_hardware_domain(XSM_NONE, next_hwdom);
     if ( rv )
         return rv;
 
-    printk("Initialising hardware domain %d\n", hardware_domid);
+    spin_lock(&domlist_read_lock);
 
-    dom0 = rcu_lock_domain_by_id(0);
-    ASSERT(dom0 != NULL);
+    /* Walk whole list to ensure there is only one XSM_HW_CTRL domain */
+    for ( ; *pd != NULL; pd = &(*pd)->next_in_list )
+        if ( (*pd)->xsm_roles & XSM_HW_CTRL ) {
+            if ( !already_found )
+                panic("There should be only one domain with XSM_HW_CTRL\n");
+            already_found = true;
+            curr_hwdom = pd;
+        }
+
+    spin_unlock(&domlist_read_lock);
+
+    ASSERT(curr_hwdom != NULL);
+
+    printk("Initialising hardware domain %d\n", d->domain_id);
+
+    rcu_lock_domain(curr_hwdom);
     /*
      * Hardware resource ranges for domain 0 have been set up from
      * various sources intended to restrict the hardware domain's
@@ -331,17 +359,19 @@ static int late_hwdom_init(struct domain *d)
      * may be modified after this hypercall returns if a more complex
      * device model is desired.
      */
-    rangeset_swap(d->irq_caps, dom0->irq_caps);
-    rangeset_swap(d->iomem_caps, dom0->iomem_caps);
+    rangeset_swap(next_hwdom->irq_caps, curr_hwdom->irq_caps);
+    rangeset_swap(next_hwdom->iomem_caps, curr_hwdom->iomem_caps);
 #ifdef CONFIG_X86
-    rangeset_swap(d->arch.ioport_caps, dom0->arch.ioport_caps);
-    setup_io_bitmap(d);
-    setup_io_bitmap(dom0);
+    rangeset_swap(next_hwdom->arch.ioport_caps, curr_hwdom->arch.ioport_caps);
+    setup_io_bitmap(next_hwdom);
+    setup_io_bitmap(curr_hwdom);
 #endif
 
-    rcu_unlock_domain(dom0);
+    curr_hwdom->xsm_roles &= ! XSM_HW_CTRL;
 
-    iommu_hwdom_init(d);
+    rcu_unlock_domain(curr_hwdom);
+
+    iommu_hwdom_init(next_hwdom);
 
     return rv;
 #else
@@ -530,7 +560,7 @@ struct domain *domain_create(domid_t domid,
                              struct xen_domctl_createdomain *config,
                              bool is_priv)
 {
-    struct domain *d, **pd, *old_hwdom = NULL;
+    struct domain *d, **pd;
     enum { INIT_watchdog = 1u<<1,
            INIT_evtchn = 1u<<3, INIT_gnttab = 1u<<4, INIT_arch = 1u<<5 };
     int err, init_status = 0;
@@ -559,17 +589,19 @@ struct domain *domain_create(domid_t domid,
     /* Sort out our idea of is_control_domain(). */
     d->is_privileged = is_priv;
 
-    if (is_priv)
+    /* reality is that is_priv is only set when construction dom0 */
+    if (is_priv) {
         d->xsm_roles = CLASSIC_DOM0_PRIVS;
+        hardware_domain = d;
+    }
 
     /* Sort out our idea of is_hardware_domain(). */
-    if ( domid == 0 || domid == hardware_domid )
+    if ( domid == hardware_domid )
     {
         if ( hardware_domid < 0 || hardware_domid >= DOMID_FIRST_RESERVED )
             panic("The value of hardware_dom must be a valid domain ID\n");
 
-        old_hwdom = hardware_domain;
-        hardware_domain = d;
+        d->xsm_roles = CLASSIC_HWDOM_PRIVS;
     }
 
     TRACE_1D(TRC_DOM0_DOM_ADD, d->domain_id);
@@ -682,12 +714,14 @@ struct domain *domain_create(domid_t domid,
         if ( (err = sched_init_domain(d, 0)) != 0 )
             goto fail;
 
-        if ( (err = late_hwdom_init(d)) != 0 )
+        if ( (err = pivot_hw_ctl(d)) != 0 )
             goto fail;
 
         /*
          * Must not fail beyond this point, as our caller doesn't know whether
-         * the domain has been entered into domain_list or not.
+         * the domain has been entered into domain_list or not. Additionally
+         * if a hardware control pivot occurred then a failure will leave the
+         * platform without access to hardware.
          */
 
         spin_lock(&domlist_update_lock);
@@ -711,8 +745,6 @@ struct domain *domain_create(domid_t domid,
     err = err ?: -EILSEQ; /* Release build safety. */
 
     d->is_dying = DOMDYING_dead;
-    if ( hardware_domain == d )
-        hardware_domain = old_hwdom;
     atomic_set(&d->refcnt, DOMAIN_DESTROYED);
 
     sched_destroy_domain(d);
@@ -805,6 +837,42 @@ out:
     domain_update_node_affinity(d);
 
     return 0;
+}
+
+
+bool is_hardware_domain_started()
+{
+    bool exists = false;
+    struct domain **pd = &domain_list;
+
+    if ( *pd != NULL) {
+        rcu_read_lock(&domlist_read_lock);
+
+        for ( ; *pd != NULL; pd = &(*pd)->next_in_list )
+            if ( (*pd)->xsm_roles & XSM_HW_CTRL )
+                break;
+
+        rcu_read_unlock(&domlist_read_lock);
+
+        if ( *pd != NULL )
+            exists = true;
+    }
+
+    if (exists)
+        ASSERT(*pd == hardware_domain);
+
+    return exists;
+}
+
+
+struct domain *get_hardware_domain()
+{
+    if (hardware_domain == NULL)
+        return NULL;
+
+    ASSERT(hardware_domain->xsm_roles & XSM_HW_CTRL);
+
+    return hardware_domain;
 }
 
 

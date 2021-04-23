@@ -2358,7 +2358,7 @@ static int reassign_device_ownership(
      * can attempt to send arbitrary LAPIC/MSI messages. We are unprotected
      * by the root complex unless interrupt remapping is enabled.
      */
-    if ( (target != hardware_domain) && !iommu_intremap )
+    if ( (!is_hardware_domain(target)) && !iommu_intremap )
         untrusted_msi = true;
 
     /*

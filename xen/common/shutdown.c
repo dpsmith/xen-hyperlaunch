@@ -32,43 +32,45 @@ static void noreturn maybe_reboot(void)
 
 void hwdom_shutdown(u8 reason)
 {
+    struct domain *hwdom = get_hardware_domain();
+
     switch ( reason )
     {
     case SHUTDOWN_poweroff:
         printk("Hardware Dom%u halted: halting machine\n",
-               hardware_domain->domain_id);
+               hwdom->domain_id);
         machine_halt();
         break; /* not reached */
 
     case SHUTDOWN_crash:
         debugger_trap_immediate();
-        printk("Hardware Dom%u crashed: ", hardware_domain->domain_id);
+        printk("Hardware Dom%u crashed: ", hwdom->domain_id);
         kexec_crash(CRASHREASON_HWDOM);
         maybe_reboot();
         break; /* not reached */
 
     case SHUTDOWN_reboot:
         printk("Hardware Dom%u shutdown: rebooting machine\n",
-               hardware_domain->domain_id);
+               hwdom->domain_id);
         machine_restart(0);
         break; /* not reached */
 
     case SHUTDOWN_watchdog:
         printk("Hardware Dom%u shutdown: watchdog rebooting machine\n",
-               hardware_domain->domain_id);
+               hwdom->domain_id);
         kexec_crash(CRASHREASON_WATCHDOG);
         machine_restart(0);
         break; /* not reached */
 
     case SHUTDOWN_soft_reset:
         printk("Hardware domain %d did unsupported soft reset, rebooting.\n",
-               hardware_domain->domain_id);
+               hwdom->domain_id);
         machine_restart(0);
         break; /* not reached */
 
     default:
         printk("Hardware Dom%u shutdown (unknown reason %u): ",
-               hardware_domain->domain_id, reason);
+               hwdom->domain_id, reason);
         maybe_reboot();
         break; /* not reached */
     }

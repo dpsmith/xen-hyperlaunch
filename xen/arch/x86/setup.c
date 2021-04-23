@@ -776,6 +776,9 @@ static struct domain *__init create_dom0(const module_t *image,
     if ( IS_ERR(d) || (alloc_dom0_vcpu0(d) == NULL) )
         panic("Error creating domain 0\n");
 
+    /* Ensure the correct roles are assigned */
+    d->xsm_roles = CLASSIC_DOM0_PRIVS;
+
     /* Grab the DOM0 command line. */
     cmdline = image->string ? __va(image->string) : NULL;
     if ( cmdline || kextra )

@@ -210,7 +210,7 @@ void machine_crash_shutdown(void)
     info = kexec_crash_save_info();
     info->xen_phys_start = xen_phys_start;
     info->dom0_pfn_to_mfn_frame_list_list =
-        arch_get_pfn_to_mfn_frame_list_list(hardware_domain);
+        arch_get_pfn_to_mfn_frame_list_list(get_hardware_domain());
 }
 
 /*

@@ -577,6 +577,7 @@ void vm_event_cleanup(struct domain *d)
 int vm_event_domctl(struct domain *d, struct xen_domctl_vm_event_op *vec)
 {
     int rc;
+    struct domain *hwdom = get_hardware_domain();
 
     if ( vec->op == XEN_VM_EVENT_GET_VERSION )
     {
@@ -624,7 +625,7 @@ int vm_event_domctl(struct domain *d, struct xen_domctl_vm_event_op *vec)
         {
             rc = -EOPNOTSUPP;
             /* hvm fixme: p2m_is_foreign types need addressing */
-            if ( is_hvm_domain(hardware_domain) )
+            if ( is_hvm_domain(hwdom) )
                 break;
 
             rc = -ENODEV;
@@ -717,7 +718,7 @@ int vm_event_domctl(struct domain *d, struct xen_domctl_vm_event_op *vec)
         case XEN_VM_EVENT_ENABLE:
             rc = -EOPNOTSUPP;
             /* hvm fixme: p2m_is_foreign types need addressing */
-            if ( is_hvm_domain(hardware_domain) )
+            if ( is_hvm_domain(hwdom) )
                 break;
 
             rc = -ENODEV;

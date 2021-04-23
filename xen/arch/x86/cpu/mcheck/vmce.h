@@ -6,8 +6,7 @@
 int vmce_init(struct cpuinfo_x86 *c);
 
 #define dom0_vmce_enabled() \
-    (hardware_domain && \
-     evtchn_virq_enabled(domain_vcpu(hardware_domain, 0), VIRQ_MCA))
+    (evtchn_virq_enabled(domain_vcpu(get_hardware_domain(), 0), VIRQ_MCA))
 
 int unmmap_broken_page(struct domain *d, mfn_t mfn, unsigned long gfn);
 

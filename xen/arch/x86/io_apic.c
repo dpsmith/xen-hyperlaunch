@@ -2351,6 +2351,7 @@ int ioapic_guest_write(unsigned long physbase, unsigned int reg, u32 val)
     struct IO_APIC_route_entry rte = { 0 };
     unsigned long flags;
     struct irq_desc *desc;
+    struct domain *hwdom = get_hardware_domain();
 
     if ( (apic = ioapic_physbase_to_id(physbase)) < 0 )
         return apic;
@@ -2401,7 +2402,7 @@ int ioapic_guest_write(unsigned long physbase, unsigned int reg, u32 val)
     if ( !rte.mask )
     {
         pirq = (irq >= 256) ? irq : rte.vector;
-        if ( pirq >= hardware_domain->nr_pirqs )
+        if ( pirq >= hwdom->nr_pirqs )
             return -EINVAL;
     }
     else
@@ -2443,10 +2444,10 @@ int ioapic_guest_write(unsigned long physbase, unsigned int reg, u32 val)
     }
     if ( pirq >= 0 )
     {
-        spin_lock(&hardware_domain->event_lock);
-        ret = map_domain_pirq(hardware_domain, pirq, irq,
+        spin_lock(&hwdom->event_lock);
+        ret = map_domain_pirq(hwdom, pirq, irq,
                               MAP_PIRQ_TYPE_GSI, NULL);
-        spin_unlock(&hardware_domain->event_lock);
+        spin_unlock(&hwdom->event_lock);
         if ( ret < 0 )
             return ret;
     }

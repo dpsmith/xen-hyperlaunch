@@ -904,7 +904,8 @@ void send_global_virq(uint32_t virq)
 {
     ASSERT(virq_is_global(virq));
 
-    send_guest_global_virq(global_virq_handlers[virq] ?: hardware_domain, virq);
+    send_guest_global_virq(
+        global_virq_handlers[virq] ?: get_hardware_domain(), virq);
 }
 
 int set_global_virq_handler(struct domain *d, uint32_t virq)

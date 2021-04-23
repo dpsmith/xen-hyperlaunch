@@ -1198,6 +1198,7 @@ int memory_add(unsigned long spfn, unsigned long epfn, unsigned int pxm)
     unsigned long old_max = max_page, old_total = total_pages;
     unsigned long old_node_start, old_node_span, orig_online;
     unsigned long i;
+    struct domain *hwdom = get_hardware_domain();
 
     dprintk(XENLOG_INFO, "memory_add %lx ~ %lx with pxm %x\n", spfn, epfn, pxm);
 
@@ -1280,12 +1281,12 @@ int memory_add(unsigned long spfn, unsigned long epfn, unsigned int pxm)
      * shared or being kept in sync then newly added memory needs to be
      * mapped here.
      */
-    if ( is_iommu_enabled(hardware_domain) &&
-         !iommu_use_hap_pt(hardware_domain) &&
-         !need_iommu_pt_sync(hardware_domain) )
+    if ( is_iommu_enabled(hwdom) &&
+         !iommu_use_hap_pt(hwdom) &&
+         !need_iommu_pt_sync(hwdom) )
     {
         for ( i = spfn; i < epfn; i++ )
-            if ( iommu_legacy_map(hardware_domain, _dfn(i), _mfn(i),
+            if ( iommu_legacy_map(hwdom, _dfn(i), _mfn(i),
                                   1ul << PAGE_ORDER_4K,
                                   IOMMUF_readable | IOMMUF_writable) )
                 break;
@@ -1293,7 +1294,7 @@ int memory_add(unsigned long spfn, unsigned long epfn, unsigned int pxm)
         {
             while (i-- > old_max)
                 /* If statement to satisfy __must_check. */
-                if ( iommu_legacy_unmap(hardware_domain, _dfn(i),
+                if ( iommu_legacy_unmap(hwdom, _dfn(i),
                                         1ul << PAGE_ORDER_4K) )
                     continue;
 

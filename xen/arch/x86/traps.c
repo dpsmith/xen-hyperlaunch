@@ -1683,7 +1683,7 @@ static bool pci_serr_nmicont(void)
 
 static void nmi_hwdom_report(unsigned int reason_idx)
 {
-    struct domain *d = hardware_domain;
+    struct domain *d = get_hardware_domain();
 
     if ( !d || !d->vcpu || !d->vcpu[0] || !is_pv_domain(d) /* PVH fixme */ )
         return;

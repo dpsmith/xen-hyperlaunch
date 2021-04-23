@@ -660,7 +660,7 @@ static int msi_capability_init(struct pci_dev *dev,
 
     *desc = entry;
     /* Restore the original MSI enabled bits  */
-    if ( !hardware_domain )
+    if ( !is_hardware_domain_started() )
     {
         /*
          * ..., except for internal requests (before Dom0 starts), in which
@@ -965,7 +965,7 @@ static int msix_capability_init(struct pci_dev *dev,
     ++msix->used_entries;
 
     /* Restore MSI-X enabled bits */
-    if ( !hardware_domain )
+    if ( !is_hardware_domain_started() )
     {
         /*
          * ..., except for internal requests (before Dom0 starts), in which

@@ -475,6 +475,7 @@ struct domain
 #define XSM_XENSTORE  (1U<<31) /* Xenstore: domain that can do privileged operations on xenstore */
 #define CLASSIC_DOM0_PRIVS (XSM_PLAT_CTRL | XSM_DOM_BUILD | XSM_DOM_SUPER | \
 		XSM_DEV_EMUL | XSM_HW_CTRL | XSM_HW_SUPER | XSM_XENSTORE)
+#define CLASSIC_HWDOM_PRIVS (XSM_HW_CTRL | XSM_DEV_EMUL)
 /* Any access for which XSM_DEV_EMUL is the restriction, XSM_DOM_SUPER is an override */
 #define DEV_EMU_PRIVS (XSM_DOM_SUPER | XSM_DEV_EMUL)
 /* Anytime there is an XSM_TARGET check, XSM_SELF also applies, and XSM_DOM_SUPER is an override */
@@ -730,6 +731,10 @@ static inline struct domain *rcu_lock_current_domain(void)
 {
     return /*rcu_lock_domain*/(current->domain);
 }
+
+bool is_hardware_domain_started(void);
+
+struct domain *get_hardware_domain(void);
 
 struct domain *get_domain_by_id(domid_t dom);
 
@@ -1048,7 +1053,7 @@ static always_inline bool is_hardware_domain(const struct domain *d)
     if ( IS_ENABLED(CONFIG_PV_SHIM_EXCLUSIVE) )
         return false;
 
-    return evaluate_nospec(d == hardware_domain);
+    return evaluate_nospec(d->xsm_roles & XSM_HW_CTRL);
 }
 
 /* This check is for functionality specific to a control domain */

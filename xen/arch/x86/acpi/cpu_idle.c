@@ -1206,7 +1206,8 @@ static void set_cx(
             cx->entry_method = ACPI_CSTATE_EM_HALT;
         break;
     case ACPI_ADR_SPACE_SYSTEM_IO:
-        if ( ioports_deny_access(hardware_domain, cx->address, cx->address) )
+        if ( ioports_deny_access(get_hardware_domain(),
+             cx->address, cx->address) )
             printk(XENLOG_WARNING "Could not deny access to port %04x\n",
                    cx->address);
         cx->entry_method = ACPI_CSTATE_EM_SYSIO;
