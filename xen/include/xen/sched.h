@@ -473,15 +473,6 @@ struct domain
 #define XSM_HW_CTRL   (1U<<8)  /* Hardware Control: domain with physical hardware access and its allocation for domain usage */
 #define XSM_HW_SUPER  (1U<<9)  /* Hardware Supervisor: domain that control allocated physical hardware */
 #define XSM_XENSTORE  (1U<<31) /* Xenstore: domain that can do privileged operations on xenstore */
-#define CLASSIC_DOM0_PRIVS (XSM_PLAT_CTRL | XSM_DOM_BUILD | XSM_DOM_SUPER | \
-		XSM_DEV_EMUL | XSM_HW_CTRL | XSM_HW_SUPER | XSM_XENSTORE)
-#define CLASSIC_HWDOM_PRIVS (XSM_HW_CTRL | XSM_DEV_EMUL)
-/* Any access for which XSM_DEV_EMUL is the restriction, XSM_DOM_SUPER is an override */
-#define DEV_EMU_PRIVS (XSM_DOM_SUPER | XSM_DEV_EMUL)
-/* Anytime there is an XSM_TARGET check, XSM_SELF also applies, and XSM_DOM_SUPER is an override */
-#define TARGET_PRIVS (XSM_TARGET | XSM_SELF | XSM_DOM_SUPER)
-/* Anytime there is an XSM_XENSTORE check, XSM_DOM_SUPER is an override */
-#define XENSTORE_PRIVS (XSM_XENSTORE | XSM_DOM_SUPER)
     uint32_t         xsm_roles;
 
     /* Which guest this guest has privileges on */
