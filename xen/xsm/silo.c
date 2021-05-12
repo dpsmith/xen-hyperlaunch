@@ -17,9 +17,11 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; If not, see <http://www.gnu.org/licenses/>.
  */
-#define XSM_NO_WRAPPERS
-#include <xsm/dummy.h>
 
+#include <xsm/xsm.h>
+#include <xsm/roles.h>
+
+#define SILO_ALLOWED_ROLES ( XSM_DOM_SUPER | XSM_DEV_BACK )
 /*
  * Check if inter-domain communication is allowed.
  * Return true when pass check.
@@ -29,8 +31,10 @@ static bool silo_mode_dom_check(const struct domain *ldom,
 {
     const struct domain *currd = current->domain;
 
-    return (is_control_domain(currd) || is_control_domain(ldom) ||
-            is_control_domain(rdom) || ldom == rdom);
+    return ( currd->xsm_roles & SILO_ALLOWED_ROLES ||
+            ldom->xsm_roles & SILO_ALLOWED_ROLES ||
+            rdom->xsm_roles & SILO_ALLOWED_ROLES ||
+            ldom == rdom );
 }
 
 static int silo_evtchn_unbound(struct domain *d1, struct evtchn *chn,
@@ -44,7 +48,7 @@ static int silo_evtchn_unbound(struct domain *d1, struct evtchn *chn,
     else
     {
         if ( silo_mode_dom_check(d1, d2) )
-            rc = xsm_evtchn_unbound(d1, chn, id2);
+            rc = xsm_validate_role(TARGET_PRIVS, current->domain, d1);
         rcu_unlock_domain(d2);
     }
 
@@ -55,7 +59,7 @@ static int silo_evtchn_interdomain(struct domain *d1, struct evtchn *chan1,
                                    struct domain *d2, struct evtchn *chan2)
 {
     if ( silo_mode_dom_check(d1, d2) )
-        return xsm_evtchn_interdomain(d1, chan1, d2, chan2);
+        return xsm_validate_role(XSM_NONE, d1, d2);
     return -EPERM;
 }
 
@@ -63,21 +67,21 @@ static int silo_grant_mapref(struct domain *d1, struct domain *d2,
                              uint32_t flags)
 {
     if ( silo_mode_dom_check(d1, d2) )
-        return xsm_grant_mapref(d1, d2, flags);
+        return xsm_validate_role(XSM_NONE, d1, d2);
     return -EPERM;
 }
 
 static int silo_grant_transfer(struct domain *d1, struct domain *d2)
 {
     if ( silo_mode_dom_check(d1, d2) )
-        return xsm_grant_transfer(d1, d2);
+        return xsm_validate_role(XSM_NONE, d1, d2);
     return -EPERM;
 }
 
 static int silo_grant_copy(struct domain *d1, struct domain *d2)
 {
     if ( silo_mode_dom_check(d1, d2) )
-        return xsm_grant_copy(d1, d2);
+        return xsm_validate_role(XSM_NONE, d1, d2);
     return -EPERM;
 }
 
