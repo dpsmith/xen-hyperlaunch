@@ -279,7 +279,7 @@ static inline int xsm_evtchn_unbound (xsm_role_t role, struct domain *d1, struct
 {
     CALL_XSM_OP(evtchn_unbound, d1, chn, id2);
     XSM_ALLOWED_ROLES(TARGET_PRIVS);
-    return xsm_validate_role(role, current->domain, d);
+    return xsm_validate_role(role, current->domain, d1);
 }
 
 static inline int xsm_evtchn_interdomain (xsm_role_t role, struct domain *d1,
@@ -993,8 +993,6 @@ extern void silo_init(void);
 static inline void silo_init(void) {}
 #endif
 
-#ifdef CONFIG_XSM_POLICY_MODULES
-
 #ifdef CONFIG_MULTIBOOT
 extern int xsm_multiboot_init(unsigned long *module_map,
                               const multiboot_info_t *mbi);
@@ -1014,29 +1012,5 @@ extern int xsm_dt_init(void);
 extern int xsm_dt_policy_init(void **policy_buffer, size_t *policy_size);
 extern bool has_xsm_magic(paddr_t);
 #endif
-
-#else /* CONFIG_XSM_POLICY_MODULES */
-
-#ifdef CONFIG_MULTIBOOT
-static inline int xsm_multiboot_init (unsigned long *module_map,
-                                      const multiboot_info_t *mbi)
-{
-    return 0;
-}
-#endif
-
-#ifdef CONFIG_HAS_DEVICE_TREE
-static inline int xsm_dt_init(void)
-{
-    return 0;
-}
-
-static inline bool has_xsm_magic(paddr_t start)
-{
-    return false;
-}
-#endif /* CONFIG_HAS_DEVICE_TREE */
-
-#endif /* CONFIG_XSM_POLICY_MODULES */
 
 #endif /* __XSM_H */
