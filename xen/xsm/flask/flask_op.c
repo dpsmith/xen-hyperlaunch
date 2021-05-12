@@ -244,7 +244,7 @@ static int flask_disable(void)
     flask_disabled = 1;
 
     /* Reset xsm_ops to the original module. */
-    xsm_ops = &dummy_xsm_ops;
+    xsm_ops = NULL;
 
     return 0;
 }
