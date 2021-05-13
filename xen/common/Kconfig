@@ -199,11 +199,12 @@ config XENOPROF
 
 	  If unsure, say Y.
 
-config XSM
-	bool "Xen Security Modules support"
-	default ARM
+menu "Xen Security Modules"
+
+config XSM_POLICY
+	bool "XSM policy support"
 	---help---
-	  Enables the security framework known as Xen Security Modules which
+	  Enables loadable policy support for Xen Security Modules which
 	  allows administrators fine-grained control over a Xen domain and
 	  its capabilities by defining permissible interactions between domains,
 	  the hypervisor itself, and related resources such as memory and
@@ -214,7 +215,7 @@ config XSM
 config XSM_FLASK
 	def_bool y
 	prompt "FLux Advanced Security Kernel support"
-	depends on XSM
+	depends on XSM_POLICY
 	---help---
 	  Enables FLASK (FLux Advanced Security Kernel) as the access control
 	  mechanism used by the XSM framework.  This provides a mandatory access
@@ -254,7 +255,6 @@ config XSM_FLASK_POLICY
 config XSM_SILO
 	def_bool y
 	prompt "SILO support"
-	depends on XSM
 	---help---
 	  Enables SILO as the access control mechanism used by the XSM framework.
 	  This is not the default module, add boot parameter xsm=silo to choose
@@ -277,6 +277,8 @@ choice
 	config XSM_SILO_DEFAULT
 		bool "SILO" if XSM_SILO
 endchoice
+
+endmenu
 
 config LATE_HWDOM
 	bool "Dedicated hardware domain"
