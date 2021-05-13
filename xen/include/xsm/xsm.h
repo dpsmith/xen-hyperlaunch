@@ -19,6 +19,9 @@
 #include <xsm/roles.h>
 #include <xen/multiboot.h>
 
+#include <public/version.h>
+#include <public/hvm/params.h>
+
 typedef void xsm_op_t;
 DEFINE_XEN_GUEST_HANDLE(xsm_op_t);
 
@@ -195,8 +198,7 @@ extern struct xsm_operations *xsm_ops;
 
 #define XSM_ALLOWED_ROLES(def)                          \
     do {                                                \
-        if ( !(def & role) )                            \
-            BUG_ON();                                   \
+        BUG_ON( !((def) & role) );                      \
     } while ( 0 )
 
 static inline void xsm_security_domaininfo (struct domain *d,
@@ -262,7 +264,7 @@ static inline int xsm_domctl (xsm_role_t role, struct domain *d, int cmd)
 
 static inline int xsm_sysctl (xsm_role_t role, int cmd)
 {
-    CALL_XSM_OP(sysctl(cmd);
+    CALL_XSM_OP(sysctl, cmd);
     XSM_ALLOWED_ROLES(XSM_PLAT_CTRL);
     return xsm_validate_role(role, current->domain, NULL);
 }
@@ -368,7 +370,7 @@ static inline int xsm_alloc_security_domain (struct domain *d)
 
 static inline void xsm_free_security_domain (struct domain *d)
 {
-    CALL_XSM_OP_NORET(free_security_domain(d);
+    CALL_XSM_OP_NORET(free_security_domain, d);
     return;
 }
 
@@ -382,7 +384,7 @@ static inline int xsm_alloc_security_evtchns(
 static inline void xsm_free_security_evtchns(
     struct evtchn chn[], unsigned int nr)
 {
-    CALL_XSM_OP_NORET(free_security_evtchns(chn, nr);
+    CALL_XSM_OP_NORET(free_security_evtchns, chn, nr);
     return;
 }
 
@@ -642,14 +644,14 @@ static inline int xsm_resource_unplug_pci (xsm_role_t role, uint32_t machine_bdf
 
 static inline int xsm_resource_plug_core (xsm_role_t role)
 {
-    CALL_XSM_OP(resource_plug_core, );
+    CALL_XSM_OP(resource_plug_core);
     XSM_ALLOWED_ROLES(XSM_NONE);
     return xsm_validate_role(role, current->domain, NULL);
 }
 
 static inline int xsm_resource_unplug_core (xsm_role_t role)
 {
-    CALL_XSM_OP(resource_unplug_core, );
+    CALL_XSM_OP(resource_unplug_core);
     XSM_ALLOWED_ROLES(XSM_NONE);
     return xsm_validate_role(role, current->domain, NULL);
 }
@@ -670,7 +672,7 @@ static inline int xsm_resource_setup_gsi (xsm_role_t role, int gsi)
 
 static inline int xsm_resource_setup_misc (xsm_role_t role)
 {
-    CALL_XSM_OP(resource_setup_misc, );
+    CALL_XSM_OP(resource_setup_misc);
     XSM_ALLOWED_ROLES(XSM_HW_CTRL);
     return xsm_validate_role(role, current->domain, NULL);
 }
@@ -684,7 +686,7 @@ static inline int xsm_page_offline(xsm_role_t role, uint32_t cmd)
 
 static inline int xsm_hypfs_op(xsm_role_t role)
 {
-    CALL_XSM_OP(hypfs_op, );
+    CALL_XSM_OP(hypfs_op);
     XSM_ALLOWED_ROLES(XSM_PLAT_CTRL);
     return xsm_validate_role(role, current->domain, NULL);
 }
@@ -795,7 +797,7 @@ static inline int xsm_platform_op (xsm_role_t role, uint32_t op)
 #ifdef CONFIG_X86
 static inline int xsm_do_mca(xsm_role_t role)
 {
-    CALL_XSM_OP(do_mca, );
+    CALL_XSM_OP(do_mca);
     XSM_ALLOWED_ROLES(XSM_PLAT_CTRL);
     return xsm_validate_role(role, current->domain, NULL);
 }
@@ -823,7 +825,7 @@ static inline int xsm_apic (xsm_role_t role, struct domain *d, int cmd)
 
 static inline int xsm_machine_memory_map(xsm_role_t role)
 {
-    CALL_XSM_OP(machine_memory_map, );
+    CALL_XSM_OP(machine_memory_map);
     XSM_ALLOWED_ROLES(XSM_PLAT_CTRL);
     return xsm_validate_role(role, current->domain, NULL);
 }
