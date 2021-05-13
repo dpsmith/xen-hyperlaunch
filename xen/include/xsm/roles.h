@@ -67,4 +67,4 @@ static always_inline int xsm_validate_role(
     return -EPERM;
 }
 
-#endif __XSM_ROLES_H__
+#endif /* __XSM_ROLES_H__ */
