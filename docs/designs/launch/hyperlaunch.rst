@@ -198,8 +198,8 @@ The benefits of this structure include:
   discovery
 * Compatibility: Supports reuse of familiar tools with use-case customized boot
   domains.
-* Commonality: Reuses and pools of the same logic for initial basic domain
-  building across diverse Xen deployments.
+* Commonality: Reuses the same logic for initial basic domain building across
+  diverse Xen deployments.
 	* It aligns the x86 initial domain construction with the existing Arm
 	  dom0less feature for construction of multiple domains at boot.
 	* The boot domain implementation may vary significantly with different
