@@ -407,8 +407,8 @@ memory image to run, including the kernel and ramdisk. A subsequent step
 applies the extended configuration used by the toolstack to provide a domain
 with any additional configuration information. Until the extended configuration
 is completed, a domain has access to no resources except its allocated vcpus
-and memory. The exception to this is Dom0 which the hypervisor explicitly
-grants control and access to all system resources except for those that only
+and memory. The exception to this is Dom0, which the hypervisor explicitly
+grants control and access to all system resources, except for those that only
 the hypervisor should have control over.  This exception for Dom0 is driven by
 the system structure with a monolithic Dom0 domain predating introduction of
 support for disaggregation into Xen, and the corresponding default assignment
@@ -605,15 +605,15 @@ configuration entry in the LCM, in the same manner as the other initial
 domains, and it will not be unpaused at launch finalization unless a failure is
 encountered starting the initial domains.
 
-The Recovery Domain functionality is separate from and complementary to Xen’s
-existing support for a Crash Environment, where memory can be reserved at host
-boot and a kernel loaded into it, to be jumped into at any point while the
-system is running when a crash is detected. The Crash Environment replaces the
-previously active hypervisor and guests running, and enables a process for
-mounting disks to write out log information prior to rebooting the system. In
-contrast, the Recovery Domain is able to use the functionality of the Xen
-hypervisor that is still present and running to perform recovery handling for
-errors encountered with starting the initial domains.
+Xen has existing support for a Crash Environment where memory can be reserved
+at host boot and a kernel loaded into it, to be jumped into at any point while
+the system is running when a crash is detected. The Recovery Domain
+functionality is a separate, complementary capability. The Crash Environment
+replaces the previously active hypervisor and running guests, and enables a
+process for mounting disks to write out log information prior to rebooting the
+system. In contrast, the Recovery Domain is able to use the functionality of
+the Xen hypervisor, that is still present and running, to perform recovery
+handling for errors encountered with starting the initial domains.
 
 Deferred Design
 """""""""""""""
@@ -665,7 +665,7 @@ Communication of Domain Configurations
 
 There are several standard methods for an Operating System to access machine
 configuration and environment information: ACPI is common on x86 systems,
-whereas Device Tree is more typical on Arm platforms. These are currently
+whereas Device Tree is more typical on Arm platforms. There are currently
 implementations of both in Xen.
 
 * For dom0less, guest Device Trees are dynamically constructed by the
@@ -680,7 +680,7 @@ ACPI and Device Tree methods.
 
 Communication of data between a Boot Domain and a Control Domain is of note
 since they may not be running concurrently: the method used will depend on
-their specific implementations but one option available is to use Xen’s hypfs
+their specific implementations, but one option available is to use Xen’s hypfs
 for transfer of basic data to support system bootstrap.
 
 -------------------------------------------------------------------------------
