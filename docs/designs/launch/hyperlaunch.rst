@@ -188,27 +188,27 @@ p2m table and ACPI tables.
 Subsequent to this, the boot domain can apply additional configuration to the
 initial domains from the data in the LCM, in *extended domain construction*.
 
-The motivations for this structure include:
+The benefits of this structure include:
 
-* Security: The permissions required by the boot domain can be constrained: it
-  does not require the capability to create domains in this structure. This
-  aligns with the principles of least privilege.
-* Flexibility: Allows the boot domain to perform use-case-specific,
-  policy-based dynamic assignment of hardware that are discovered available on
-  the host.
-* Compatibility: supports reuse of familiar tools with use-case customized boot
+* Security: Contrains the permissions required by the boot domain: it does not
+  require the capability to create domains in this structure. This aligns with
+  the principles of least privilege.
+* Flexibility: Enables policy-based dynamic assignment of hardware by the boot
+  domain, customizable according to use-case and able to adapt to hardware
+  discovery
+* Compatibility: Supports reuse of familiar tools with use-case customized boot
   domains.
-* Commonality: Pooling and reuse of the same logic for initial basic domain
-  building across Xen deployments.
+* Commonality: Reuses and pools of the same logic for initial basic domain
+  building across diverse Xen deployments.
 	* It aligns the x86 initial domain construction with the existing Arm
 	  dom0less feature for construction of multiple domains at boot.
 	* The boot domain implementation may vary significantly with different
 	  deployment use cases, whereas the hypervisor implementation is
 	  common.
-* Correctness: Increasing confidence in the implementation of domain
+* Correctness: Increases confidence in the implementation of domain
   construction, since it is performed by the hypervisor in well maintained and
   centrally tested logic.
-* Performance: it enables launch for configurations where a fast start of
+* Performance: Enables launch for configurations where a fast start of
   multiple domains at boot is a requirement.
 * Capability: Supports launch of advanced configurations where a sequenced
   start of multiple domains is required, or multiple domains are involved in
