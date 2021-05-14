@@ -5,9 +5,9 @@ Hyperlaunch Design Document
 .. sectnum:: :depth: 4
 
 This post is a Request for Comment on the included v4 of a design document that
-describes hyperlaunch: a new method of launching the Xen hypervisor, relating
-to dom0less and work from the DomB project. We invite discussion of this on
-this list, at the monthly Xen Community Calls, and at dedicated meetings on
+describes Hyperlaunch: a new method of launching the Xen hypervisor, relating
+to dom0less and work from the Hyperlaunch project. We invite discussion of this
+on this list, at the monthly Xen Community Calls, and at dedicated meetings on
 this topic in the Xen Working Group which will be announced in advance on the
 Xen Development mailing list.
 
@@ -20,16 +20,17 @@ Introduction
 
 This document describes the design and motivation for the funded development of
 a new, flexible system for launching the Xen hypervisor and virtual machines
-named: "hyperlaunch".
+named: "Hyperlaunch".
 
 The design enables seamless transition for existing systems that require a
 dom0, and provides a new general capability to build and launch alternative
 configurations of virtual machines, including support for static partitioning
 and accelerated start of VMs during host boot, while adhering to the principles
 of least privilege. It incorporates the existing dom0less functionality,
-extended to fold in the new developments from the DomB project, with support
-for both x86 and Arm platform architectures, building upon and replacing the
-earlier 'late hardware domain' feature for disaggregation of dom0.
+extended to fold in the new developments from the Hyperlaunch project, with
+support for both x86 and Arm platform architectures, building upon and
+replacing the earlier 'late hardware domain' feature for disaggregation of
+dom0.
 
 Hyperlaunch is designed to be flexible and reusable across multiple use cases,
 and our aim is to ensure that it is capable, widely exercised, comprehensively
@@ -50,16 +51,16 @@ Approach
 ========
 
 Born out of improving support for Dynamic Root of Trust for Measurement (DRTM),
-the DomB project is focused on restructuring the system launch of Xen. The
-hyperlaunch design provides a security architecture that builds on the
+the Hyperlaunch project is focused on restructuring the system launch of Xen.
+The Hyperlaunch design provides a security architecture that builds on the
 principles of Least Privilege and Strong Isolation, achieving this through the
 disaggregation of system functions. It enables this with the introduction of a
 boot domain that works in conjunction with the hypervisor to provide the
 ability to launch multiple domains as part of host boot while maintaining a
 least privilege implementation.
 
-While the DomB project inception was and continues to be driven by a focus on
-security through disaggregation, there are multiple use cases with a
+While the Hyperlaunch project inception was and continues to be driven by a
+focus on security through disaggregation, there are multiple use cases with a
 non-security focus that require or benefit from the ability to launch multiple
 domains at host boot. This was proven by the need that drove the implementation
 of the dom0less capability in the Arm branch of Xen.
@@ -79,10 +80,10 @@ Objectives
         * classic Xen boot: starting a single, privileged Dom0
         * classic Xen boot with late hardware domain: starting a Dom0 that transitions hardware access/control to another domain
         * a dom0less boot: starting multiple domains without privilege assignment controls
-        * hyperlaunch: starting one or more VMs, with flexible configuration
+        * Hyperlaunch: starting one or more VMs, with flexible configuration
 
 * Preferred that it be managed via KCONFIG options to govern inclusion of support for each style
-* The selection between classic boot and hyperlaunch boot should be automatic
+* The selection between classic boot and Hyperlaunch boot should be automatic
 
         * Preferred that it not require a kernel command line parameter for selection
 
@@ -109,7 +110,7 @@ flask, provides strong controls that enable fine grained system partitioning.
 Hypervisor Launch Landscape
 ---------
 
-This comparison table presents the distinctive capabilities of hyperlaunch with
+This comparison table presents the distinctive capabilities of Hyperlaunch with
 reference to existing launch configurations currently available in Xen and
 other hypervisors.
 
@@ -173,7 +174,7 @@ other hypervisors.
 Domain Construction
 -------------------
 
-An important aspect of the hyperlaunch architecture is that the hypervisor
+An important aspect of the Hyperlaunch architecture is that the hypervisor
 performs domain construction for all the Initial Domains,  ie. it builds each
 domain that is described in the Launch Control Module. More specifically, the
 hypervisor will perform the function of *domain creation* for each Initial
@@ -227,7 +228,7 @@ Common Boot Configurations
 --------------------------
 
 When looking across those that have expressed interest or discussed a need for
-launching multiple domains at host boot, the hyperlaunch approach is to provide
+launching multiple domains at host boot, the Hyperlaunch approach is to provide
 the means to start nearly any combination of domains. Below is an enumerated
 selection of common boot configurations for reference in the following section. 
 
@@ -331,7 +332,7 @@ domain running the virtualization toolstack software and each domain managing
 hardware, with PCI passthrough performed during host boot and support for
 measured launch.
 
-hyperlaunch Disaggregated Launch
+Hyperlaunch Disaggregated Launch
 --------------------------------
 
 
@@ -339,7 +340,7 @@ Existing in Xen today are two primary permissions, *control domain* and
 *hardware domain*, and two functions, *console domain* and *xenstore domain*,
 that can be assigned to a domain. Traditionally all of these permissions and
 functions are all assigned to Dom0 at start and can then be delegated to other
-domains created by the toolstack in Dom0. With hyperlaunch it becomes possible
+domains created by the toolstack in Dom0. With Hyperlaunch it becomes possible
 to assign these permissions and functions to any domain for which there is a
 definition provided at startup.
 
@@ -350,14 +351,14 @@ during startup.
 
 Supporting the booting of each of the above common boot configurations is
 accomplished by considering the set of initial domains and the assignment of
-Xen’s permissions and functions, including the ones introduced by hyperlaunch,
+Xen’s permissions and functions, including the ones introduced by Hyperlaunch,
 to these domains. A discussion of these will be covered later but for now they
 are laid out in a table with a mapping to the common boot configurations. This
 table is not intended to be an exhaustive list of configurations and does not
 account for flask policy specified functions that are use case specific.
 
 In the table each number represents a separate domain being
-constructed by the hyperlaunch construction path as Xen starts, and the
+constructed by the Hyperlaunch construction path as Xen starts, and the
 designator, ``{n}`` signifies that there may be “n” additional domains that may
 be constructed that do not have any special role for a general Xen system.
 
@@ -395,10 +396,10 @@ be constructed that do not have any special role for a general Xen system.
  | Disaggregation    |      |      |    |      |        |        |          |
  +-------------------+------+------+----+------+--------+--------+----------+
 
-Overview of hyperlaunch Flow
+Overview of Hyperlaunch Flow
 ----------------------------
 
-Before delving into hyperlaunch, a good basis to start with is an understanding
+Before delving into Hyperlaunch, a good basis to start with is an understanding
 of the current process to create a domain. A way to view this process starts
 with the core configuration which is the information the hypervisor requires to
 make the call to `domain_create`, followed by basic construction to provide the
@@ -426,30 +427,30 @@ domain. It is worth mentioning that this approach for disaggregation was
 created in this manner due to the inability of Xen to launch more than one
 domain at startup.
 
-hyperlaunch Xen startup
+Hyperlaunch Xen startup
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The hyperlaunch approach’s primary focus is on how to assign the roles
+The Hyperlaunch approach’s primary focus is on how to assign the roles
 traditionally granted to Dom0 to one or more domains at host boot. While the
 statement is simple to make, the implications are not trivial by any means.
-This also explains why the hyperlaunch approach is orthogonal to the existing
+This also explains why the Hyperlaunch approach is orthogonal to the existing
 dom0less capability. The dom0less capability focuses on enabling the launch of
 multiple domains in parallel with Dom0 at host boot. A corollary for dom0less
 is that for systems that don’t require Dom0 after all guest domains have
 started, they are able to do the host boot without a Dom0. Though it should be
 noted that it may be possible to start  Dom0 at a later point. Whereas with
-hyperlaunch, its approach of separating Dom0’s roles requires the ability to
+Hyperlaunch, its approach of separating Dom0’s roles requires the ability to
 launch multiple domains at host boot. The direct consequences from this
 approach are profound and provide a myriad of possible configurations for which
 a sample of common boot configurations were already presented.
 
-To enable the hyperlaunch approach a new alternative path for host boot within
+To enable the Hyperlaunch approach a new alternative path for host boot within
 the hypervisor must be introduced. This alternative path effectively branches
 just before the current point of Dom0 construction and begins an alternate
 means of system construction. The determination if this alternate path should
 be taken is through the inspection of the boot chain. If the bootloader has
 loaded a specific configuration, as described later, it will enable Xen to
-detect that a hyperlaunch configuration has been provided. Once a hyperlaunch
+detect that a Hyperlaunch configuration has been provided. Once a Hyperlaunch
 configuration is detected, this alternate path can be thought of as occurring
 in phases: domain creation, domain preparation, and launch finalization.
 
@@ -497,7 +498,7 @@ implementation order, are as follows,
 * Unpause any domains still in a paused state
 * Boot Domain uses a reserved function thus can never be respawned
 
-While the focus thus far has been on how the hyperlaunch capability will work,
+While the focus thus far has been on how the Hyperlaunch capability will work,
 it is worth mentioning what it does not do or limit from occurring. It does not
 stop or inhibit the assigning of the control domain role which gives the domain
 the ability to create, start, stop, restart, and destroy domains or the
@@ -510,12 +511,12 @@ configurable without the risk of circumvention by an all privileged domain.
 Structuring of Hyperlaunch
 --------------------------
 
-The structure of hyperlaunch is built around the existing capabilities of the
+The structure of Hyperlaunch is built around the existing capabilities of the
 host boot protocol. This approach was driven by the objective not to require
 modifications to the boot loader. The only requirement is that the boot loader
 supports the Multiboot2 (MB2) protocol. For UEFI boot, our recommendation is to
 use GRUB.efi to load Xen and the initial domain materials via the multiboot2
-method. On Arm platforms, hyperlaunch is compatible with the existing interface
+method. On Arm platforms, Hyperlaunch is compatible with the existing interface
 for boot into the hypervisor.
 
 
@@ -539,13 +540,13 @@ LCM was designed to have a specific set of properties,
 * allow for expanding and optional configuration fragments without breaking
   backwards compatibility
 
-To enable automatic detection of a hyperlaunch configuration, the LCM must be
+To enable automatic detection of a Hyperlaunch configuration, the LCM must be
 the first MB2 module in the MB2 module chain. The LCM is implemented using the
-Device Tree as defined in the hyperlaunch Device Tree design document. With the
+Device Tree as defined in the Hyperlaunch Device Tree design document. With the
 LCM implemented in Device Tree, it has a magic number that enables the
 hypervisor to detect its presence when used in a Multiboot2 module chain. The
 hypervisor can confirm that it is a proper LCM Device Tree by checking for a
-compliant hyperlaunch Device Tree. The hyperlaunch Device Tree nodes are
+compliant Hyperlaunch Device Tree. The Hyperlaunch Device Tree nodes are
 designed to allow,
 
 * for the hypervisor to parse only those entries it understands,
@@ -560,7 +561,7 @@ As discussed the LCM is in Device Tree format and was designed to co-exist in
 the Device Tree ecosystem, and in particular in parallel with dom0less Device
 Tree entries. On Arm, Xen is already designed to boot from a host Device Tree
 description (dtb) file and the LCM entries can be embedded into this host dtb
-file. This makes detecting the LCM entries and supporting hyperlaunch on Arm
+file. This makes detecting the LCM entries and supporting Hyperlaunch on Arm
 relatively straight forward. Relative to the described x86 approach, at the
 point where Xen inspects the first MB2 module, on Arm Xen will check if the top
 level LCM node exists in the host dtb file. If the LCM node does exist, then at
@@ -597,7 +598,7 @@ Recovery Domain
 
 With the existing Dom0 host boot path, when a failure occurs there are several
 assumptions that can safely be made to get the user to a console for
-troubleshooting. With the hyperlaunch host boot path those assumptions can no
+troubleshooting. With the Hyperlaunch host boot path those assumptions can no
 longer be made, thus a means is needed to get the user to a console in the case
 of a recoverable failure. The recovery domain is configured by a domain
 configuration entry in the LCM, in the same manner as the other initial
@@ -641,7 +642,7 @@ Hardware Domain
 ^^^^^^^^^^^^^^^
 
 The Hardware Domain is also an existing concept for Xen that is enabled through
-the `is_hardware_domain` check. With hyperlaunch the previous process of I/O
+the `is_hardware_domain` check. With Hyperlaunch the previous process of I/O
 accesses being assigned to Dom0 for later transfer to the hardware domain would
 no longer be required. Instead during the configuration phase the Xen
 hypervisor would directly assign the I/O accesses to the domain with the
@@ -651,11 +652,11 @@ Console Domain
 ^^^^^^^^^^^^^^
 
 Traditionally the Xen console is assigned to the control domain and then
-reassignable by the toolstack to another domain. With hyperlaunch it becomes
+reassignable by the toolstack to another domain. With Hyperlaunch it becomes
 possible to construct a boot configuration where there is no control domain or
 have a use case where the Xen console needs to be isolated. As such it becomes
 necessary to be able to designate which of the initial domains should be
-assigned the Xen console. Therefore hyperlaunch introduces the ability to
+assigned the Xen console. Therefore Hyperlaunch introduces the ability to
 specify an initial domain which the console is assigned along with a convention
 of ordered assignment for when there is no explicit assignment.
 
@@ -687,21 +688,21 @@ for transfer of basic data to support system bootstrap.
 Appendix
 ========
 
-Appendix 1: Flow Sequence of Steps of a hyperlaunch Boot
+Appendix 1: Flow Sequence of Steps of a Hyperlaunch Boot
 --------------------------------------------------------
 
-Provided here is an ordered flow of a hyperlaunch with a highlight logic
+Provided here is an ordered flow of a Hyperlaunch with a highlight logic
 decision points. Not all branch points are recorded, specifically for the
 variety of error conditions that may occur. ::
 
   1. Hypervisor Startup:
   2a. (x86) Inspect first module provided by the bootloader
       a. Is the module an LCM
-          i. YES: proceed with the hyperlaunch host boot path
+          i. YES: proceed with the Hyperlaunch host boot path
           ii. NO: proceed with a Dom0 host boot path
   2b. (Arm) Inspect host dtb for `/chosen/hypervisor` node
       a. Is the LCM present
-          i. YES: proceed with the hyperlaunch host boot path
+          i. YES: proceed with the Hyperlaunch host boot path
           ii. NO: proceed with a Dom0/dom0less host boot path
   3. Iterate through the LCM entries looking for the module description
      entry
@@ -754,7 +755,7 @@ Appendix 2: Considerations in Naming the Hyperlaunch Feature
   outside the Xen community
 
         * They must be able to be resolved quickly via search engine to a clear
-        * explanation (eg. Xen marketing material, documentation or wiki)
+          explanation (eg. Xen marketing material, documentation or wiki)
         * We prefer that the terms be helpful for marketing communications
         * Consequence: avoid the term “domain” which is Xen-specific and
           requires a definition to be provided each time when used elsewhere
@@ -871,10 +872,6 @@ strong controls that enable fine grained system partitioning.
   domain that is started. It is replaced with the more general term: “Boot
   Domain”.
 
-        * “DomB” will still be used in the meantime to refer to the project
-          that is under way to build the new boot process, but will not be used
-          to name a thing within Xen.
-
 * Retiring Term: “Dom0less”: it is to be replaced with “Hyperlaunch Static”
 
 
@@ -891,7 +888,7 @@ Basic Configuration
 
 Boot Domain
     a domain with limited privileges launched by the hypervisor during a
-    Multiple Domain Boot that runs as the first domain started. In the hyperlaunch
+    Multiple Domain Boot that runs as the first domain started. In the Hyperlaunch
     architecture, it is responsible for assisting with higher level operations of
     the domain setup process.
 
@@ -934,7 +931,7 @@ Domain
     the Xen Community)
 
 DomB
-    the development project to build hyperlaunch Multiple Domain Boot for Xen
+     the former name for Hyperlaunch
 
 
 Extended Configuration
@@ -951,7 +948,7 @@ Host Boot
     the system startup of Xen using the configuration provided by the bootloader
 
 
-hyperlaunch
+Hyperlaunch
     a flexible host boot that ends with the launch of one or more domains
 
 
