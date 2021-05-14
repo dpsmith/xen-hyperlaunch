@@ -988,8 +988,8 @@ Recovery Domain
 
 
 System Device Tree
-    this is the product of a community project to extend Device Tree to cover
-    more aspects of initial system configuration
+    this is the product of an Arm community project to extend Device Tree to
+    cover more aspects of initial system configuration
 
 
 Appendix 4: Copyright License
