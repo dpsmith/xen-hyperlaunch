@@ -855,7 +855,7 @@ void __init noreturn __start_xen(unsigned long mbi_p)
     unsigned int initrdidx, num_parked = 0;
     multiboot_info_t *mbi;
     module_t *mod;
-    unsigned long nr_pages, raw_max_page, modules_headroom, module_map[1];
+    unsigned long nr_pages, raw_max_page, module_map[1];
     int i, j, e820_warn = 0, bytes = 0;
     unsigned long eb_start, eb_end;
     bool acpi_boot_table_init_done = false, relocated = false;
@@ -1158,7 +1158,7 @@ void __init noreturn __start_xen(unsigned long mbi_p)
         mod[mbi->mods_count].mod_end = __2M_rwdata_end - _stext;
     }
 
-    modules_headroom = bzimage_headroom(bootstrap_map(mod), mod->mod_end);
+    mod->headroom = bzimage_headroom(bootstrap_map(mod), mod->mod_end);
     bootstrap_map(NULL);
 
 #ifndef highmem_start
@@ -1321,8 +1321,7 @@ void __init noreturn __start_xen(unsigned long mbi_p)
         /* Is the region suitable for relocating the multiboot modules? */
         for ( j = mbi->mods_count - 1; j >= 0; j-- )
         {
-            unsigned long headroom = j ? 0 : modules_headroom;
-            unsigned long size = PAGE_ALIGN(headroom + mod[j].mod_end);
+            unsigned long size = PAGE_ALIGN(mod[j].headroom + mod[j].mod_end);
 
             if ( mod[j].reserved )
                 continue;
@@ -1335,14 +1334,14 @@ void __init noreturn __start_xen(unsigned long mbi_p)
                 continue;
 
             if ( s < end &&
-                 (headroom ||
+                 (mod[j].headroom ||
                   ((end - size) >> PAGE_SHIFT) > mod[j].mod_start) )
             {
-                move_memory(end - size + headroom,
+                move_memory(end - size + mod[j].headroom,
                             (uint64_t)mod[j].mod_start << PAGE_SHIFT,
                             mod[j].mod_end, 0);
                 mod[j].mod_start = (end - size) >> PAGE_SHIFT;
-                mod[j].mod_end += headroom;
+                mod[j].mod_end += mod[j].headroom;
                 mod[j].reserved = 1;
             }
         }
@@ -1369,7 +1368,7 @@ void __init noreturn __start_xen(unsigned long mbi_p)
 #endif
     }
 
-    if ( modules_headroom && !mod->reserved )
+    if ( mod->headroom && !mod->reserved )
         panic("Not enough memory to relocate the dom0 kernel image\n");
     for ( i = 0; i < mbi->mods_count; ++i )
     {
@@ -1902,7 +1901,7 @@ void __init noreturn __start_xen(unsigned long mbi_p)
      * We're going to setup domain0 using the module(s) that we stashed safely
      * above our heap. The second module, if present, is an initrd ramdisk.
      */
-    dom0 = create_dom0(mod, modules_headroom,
+    dom0 = create_dom0(mod, mod->headroom,
                        initrdidx < mbi->mods_count ? mod + initrdidx : NULL,
                        kextra, loader);
     if ( !dom0 )
